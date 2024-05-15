@@ -1,1 +1,0 @@
-py D:\VSCodeProjects\android_helper\auto_upload.py
