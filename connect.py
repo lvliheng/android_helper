@@ -18,7 +18,7 @@ def checkDevices(selectedDevice):
       if selectedDevice in devices:
         start(selectedDevice)
       else:
-        print(selectedDevice + " offline")
+        print(selectedDevice + " not found")
     else:
       if (len(devices) == 1):
         start(devices[0])

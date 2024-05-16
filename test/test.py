@@ -11,12 +11,11 @@ from datetime import datetime, timedelta
 def test():
   print("test")
 
-  current_time = datetime.now()
-  print(current_time)
-  end_time = current_time + timedelta(seconds=1)
-  print("end_time1: ", datetime.now() > end_time)
-  time.sleep(2)
-  print("end_time2: ", datetime.now() > end_time)
+  current = datetime.now()
+  print("current: ", current)
+  start = datetime(current.year, current.month, current.day, 17, 00, 00)
+  print("start: ", start)
+  print("after start: ", current > start)
 
 
 def start(device):

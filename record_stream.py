@@ -4,25 +4,44 @@ import time
 import clipboard
 import schedule
 
-def start():
-  start_time = "19:30"
-  print("task will start at {}".format(start_time))
+def init():
+  global stream_duration_max_hour
+  stream_duration_max_hour = 2
+  global stream_duration_minute
+  stream_duration_minute = 30
 
-  schedule.every().day.at(start_time).do(init)
+  start_hour = 19
+  start_minute = 30
+  global current
+  current = datetime.now()
+  start_date_time = datetime(current.year, current.month, current.day, start_hour, start_minute, 00)
+  end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_duration_max_hour, start_minute, 00)
+  
+  if (current > start_date_time and current < end_date_time):
+    start()
+  else:
+    start_job(start_hour, start_minute)  
+
+def start_job(start_hour, start_minute):
+  start_task_time = "{}:{}".format(start_hour, start_minute)
+  print("task will start at {}".format(start_task_time))
+
+  schedule.every().day.at(start_task_time).do(init)
 
   while True:
     schedule.run_pending()
     time.sleep(1)
 
-def init():
+def start():
   global stream_start
   stream_start = 0
   global stream_dead_line
-  stream_dead_line = datetime.now() + timedelta(hours = 2)
+  global stream_duration_max_hour
+  stream_dead_line = datetime.now() + timedelta(hours = stream_duration_max_hour)
 
   global file_name
-  current = datetime.now()
   global today
+  global current
   today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
   today_millis = "{}-{}".format(today, current.strftime("%f"))
   file_name = "C:\\Users\\admin\\Downloads\\{}.mp4".format(today_millis)
@@ -80,7 +99,8 @@ def start_record():
   global stream_start
   stream_start = datetime.now()
   global stream_dead_line
-  stream_dead_line = stream_start + timedelta(minutes = 30)
+  global stream_duration_minute
+  stream_dead_line = stream_start + timedelta(minutes = stream_duration_minute)
 
   start_record_screen()
   time.sleep(2)
@@ -139,6 +159,6 @@ def stop_record_stream():
 
 if __name__=="__main__":
   try:
-    start()
+    init()
   except:
-    print("-cancel")
+    print(datetime.now(), "-cancel")
