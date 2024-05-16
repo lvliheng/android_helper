@@ -7,15 +7,14 @@ import screeninfo
 import clipboard
 import schedule
 from datetime import datetime, timedelta
+import platform
 
 def test():
   print("test")
 
-  current = datetime.now()
-  print("current: ", current)
-  start = datetime(current.year, current.month, current.day, 17, 00, 00)
-  print("start: ", start)
-  print("after start: ", current > start)
+  system = platform.system()
+  print(system)
+  print("is windows: ", system == "Windows")
 
 
 def start(device):

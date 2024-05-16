@@ -1,10 +1,14 @@
 import os
 import argparse
+import platform
 
 
 def start(device):
-  # scrcpy = "scrcpy -s {} -K -Sw --always-on-top --power-off-on-close".format(device)
-  scrcpy = "D:\_tools\scrcpy-win64-v2.4\scrcpy.exe -s {} -K -Sw --always-on-top --power-off-on-close".format(device)
+  if (platform.system() == "Windows"):
+    scrcpy = "D:\_tools\scrcpy-win64-v2.4\scrcpy.exe -s {} -K -Sw --always-on-top --power-off-on-close".format(device)
+  else:
+    scrcpy = "scrcpy -s {} -K -Sw --always-on-top --power-off-on-close".format(device)
+  
   os.system(scrcpy)
 
 def checkDevices(selectedDevice):

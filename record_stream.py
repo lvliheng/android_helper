@@ -14,8 +14,8 @@ def init():
   start_minute = 30
   global current
   current = datetime.now()
-  start_date_time = datetime(current.year, current.month, current.day, start_hour, start_minute, 00)
-  end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_duration_max_hour, start_minute, 00)
+  start_date_time = datetime(current.year, current.month, current.day, start_hour, start_minute)
+  end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_duration_max_hour, start_minute)
   
   if (current > start_date_time and current < end_date_time):
     start()
