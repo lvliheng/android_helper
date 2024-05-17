@@ -61,8 +61,12 @@ def testPixel():
   print(pixel)
   print(pixel[0], pixel[1], pixel[2])
 
+def testDrag():
+  pyautogui.moveTo(430, 200)
+  pyautogui.dragTo(430, 500, 1, button="left")
 
 if __name__=="__main__":
-  testscreen()
+  # testscreen()
   # autoClick()
   # testPixel()
+  testDrag()

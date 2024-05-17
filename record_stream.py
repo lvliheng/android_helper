@@ -5,8 +5,8 @@ import clipboard
 import schedule
 
 def init():
-  global stream_duration_max_hour
-  stream_duration_max_hour = 2
+  global stream_refresh_hour
+  stream_refresh_hour = 1
   global stream_duration_minute
   stream_duration_minute = 30
 
@@ -15,7 +15,7 @@ def init():
   global current
   current = datetime.now()
   start_date_time = datetime(current.year, current.month, current.day, start_hour, start_minute)
-  end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_duration_max_hour, start_minute)
+  end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_refresh_hour, start_minute)
   
   if (current > start_date_time and current < end_date_time):
     start()
@@ -23,10 +23,10 @@ def init():
     start_job(start_hour, start_minute)  
 
 def start_job(start_hour, start_minute):
-  start_task_time = "{}:{}".format(start_hour, start_minute)
+  start_task_time = f"{start_hour:02d}:{start_minute:02d}"
   print("task will start at {}".format(start_task_time))
 
-  schedule.every().day.at(start_task_time).do(init)
+  schedule.every().day.at(start_task_time).do(start)
 
   while True:
     schedule.run_pending()
@@ -36,8 +36,8 @@ def start():
   global stream_start
   stream_start = 0
   global stream_dead_line
-  global stream_duration_max_hour
-  stream_dead_line = datetime.now() + timedelta(hours = stream_duration_max_hour)
+  global stream_refresh_hour
+  stream_dead_line = datetime.now() + timedelta(hours = stream_refresh_hour)
 
   global file_name
   global today
@@ -61,19 +61,22 @@ def check_stream():
       if (is_after_stream_dead_line()):
         break
       else:
-        time.sleep(20)
+        time.sleep(3)
+        pyautogui.moveTo(430, 200)
+        pyautogui.dragTo(430, 500, 1, button="left")
+        time.sleep(7)
     elif (is_stream_empty()):
       if (is_after_stream_dead_line()):
         break
       else:
         print(datetime.now(), "refresh")
         pyautogui.click(430, 640)
-        time.sleep(2)
+        time.sleep(3)
         if (is_stream_start()):
           start_record()
           break
         else:
-          time.sleep(8)
+          time.sleep(7)
     else:
       time.sleep(1)
 

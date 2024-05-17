@@ -12,9 +12,9 @@ import platform
 def test():
   print("test")
 
-  system = platform.system()
-  print(system)
-  print("is windows: ", system == "Windows")
+  number = 9
+  formatNumber = f"{number:02d}"
+  print(formatNumber)
 
 
 def start(device):
