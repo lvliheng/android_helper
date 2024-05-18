@@ -3,6 +3,7 @@ import pyautogui
 import time
 import clipboard
 import schedule
+from pathlib import Path
 
 def init():
   global stream_refresh_hour
@@ -39,12 +40,14 @@ def start():
   global stream_refresh_hour
   stream_dead_line = datetime.now() + timedelta(hours = stream_refresh_hour)
 
-  global file_name
-  global today
   global current
+  global today_millis
   today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
   today_millis = "{}-{}".format(today, current.strftime("%f"))
-  file_name = "C:\\Users\\admin\\Downloads\\{}.mp4".format(today_millis)
+
+  global directory
+  directory = "D:\_temp\stream\{}".format(today)
+  Path(directory).mkdir(parents=True, exist_ok=True)
 
   print(f"------------{today}------------")
   check_stream()
@@ -63,14 +66,14 @@ def check_stream():
       else:
         time.sleep(3)
         pyautogui.moveTo(430, 200)
-        pyautogui.dragTo(430, 500, 1, button="left")
+        pyautogui.dragTo(430, 300, 1, button="left")
         time.sleep(7)
     elif (is_stream_empty()):
       if (is_after_stream_dead_line()):
         break
       else:
         print(datetime.now(), "refresh")
-        pyautogui.click(430, 640)
+        pyautogui.click(470, 300)
         time.sleep(3)
         if (is_stream_start()):
           start_record()
@@ -85,16 +88,16 @@ def is_after_stream_dead_line():
   return datetime.now() > stream_dead_line
 
 def is_stream_empty():
-  pixel = pyautogui.pixel(430, 640)
-  return pixel == (80, 82, 255)
+  pixel = pyautogui.pixel(470, 300)
+  return pixel == (81, 82, 255)
 
 def is_stream_start():
-  pixel = pyautogui.pixel(240, 240)
+  pixel = pyautogui.pixel(420, 120)
   return pixel == (255, 255, 255)
 
 def is_stream_end():
-  pixel = pyautogui.pixel(300, 600)
-  return pixel == (80, 82, 255)
+  pixel = pyautogui.pixel(450, 300)
+  return pixel == (81, 82, 255)
 
 def start_record():
   print(datetime.now(), "--start")
@@ -109,9 +112,19 @@ def start_record():
   time.sleep(2)
   start_record_stream()
 
+  time.sleep(10)
+  check_stream()
+
 def start_record_screen():
-  pyautogui.click(240, 240)
-  pyautogui.press("F10")
+  pyautogui.click(420, 120)
+  pyautogui.click(50, 560)
+  pyautogui.hotkey("ctrl", "c")
+
+  global directory
+  global today_millis
+  record_screen_command = "scrcpy -s d1bfafc4 --no-playback --record {}\{}-screen.mp4".format(directory, today_millis)
+  pyautogui.write(record_screen_command)
+  pyautogui.press("enter")
 
 def start_record_stream():
   pyautogui.click(1000, 20)
@@ -136,13 +149,11 @@ def check_stream_url():
       check_stream_url()
 
 def do_start_record(stream_url):
-  global file_name
-  record_stream_command = "ffmpeg -i {} {}".format(stream_url, file_name)
+  global directory
+  global today_millis
+  record_stream_command = "ffmpeg -i {} -map 0:v -c copy -map 0:a -c copy -strict -2 {}\{}-stream.mp4".format(stream_url, directory, today_millis)
   pyautogui.write(record_stream_command)
   pyautogui.press("enter")
-
-  time.sleep(10)
-  check_stream()
 
 def stop_record():
   print(datetime.now(), "---stop")
@@ -151,10 +162,10 @@ def stop_record():
   stop_record_screen()
 
 def stop_record_screen():
-  pyautogui.click(300, 600)
-  pyautogui.press("F10")
+  pyautogui.click(50, 560)
+  pyautogui.hotkey("ctrl", "c")
   time.sleep(1)
-  pyautogui.click(860, 260)
+  pyautogui.click(450, 300)
 
 def stop_record_stream():
   pyautogui.click(1000, 20)
