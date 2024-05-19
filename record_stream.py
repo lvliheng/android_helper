@@ -41,6 +41,7 @@ def start():
   stream_dead_line = datetime.now() + timedelta(hours = stream_refresh_hour)
 
   global current
+  current = datetime.now()
   global today_millis
   today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
   today_millis = "{}-{}".format(today, current.strftime("%f"))
