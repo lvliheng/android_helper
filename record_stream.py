@@ -111,12 +111,27 @@ def start_record():
 
   pyautogui.click(420, 120)
 
-  start_record_screen()
-  time.sleep(2)
-  start_record_stream()
+  global fail_time
+  fail_time = 0
+  check_stream_url()
 
   time.sleep(10)
   check_stream()
+
+def check_stream_url():
+  stream_url = clipboard.paste()
+  if (stream_url.startswith("rtmp:")):
+    start_record_screen()
+    time.sleep(2)
+    start_record_stream(stream_url)
+  else:
+    global fail_time
+    fail_time += 1
+    if (fail_time > 5):
+      print_with_datetime("invalid")
+    else:
+      time.sleep(3)
+      check_stream_url()
 
 def start_record_screen():
   pyautogui.click(50, 560)
@@ -129,29 +144,10 @@ def start_record_screen():
   pyautogui.write(record_screen_command)
   pyautogui.press("enter")
 
-def start_record_stream():
+def start_record_stream(stream_url):
   pyautogui.click(1000, 20)
   pyautogui.hotkey("ctrl", "c")
 
-  global fail_time
-  fail_time = 0
-
-  check_stream_url()
-
-def check_stream_url():
-  stream_url = clipboard.paste()
-  if (stream_url.startswith("rtmp:")):
-    do_start_record_stream(stream_url)
-  else:
-    global fail_time
-    fail_time += 1
-    if (fail_time > 5):
-      print_with_datetime("invalid")
-    else:
-      time.sleep(3)
-      check_stream_url()
-
-def do_start_record_stream(stream_url):
   global directory
   global today_millis
   record_stream_command = "ffmpeg -i {} -map 0:v -c copy -map 0:a -c copy -strict -2 {}\{}-stream.mp4".format(stream_url, directory, today_millis)
