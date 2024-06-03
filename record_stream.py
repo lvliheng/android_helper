@@ -47,10 +47,10 @@ def start():
   Path(directory).mkdir(parents = True, exist_ok = True)
 
   print(f"------------{today}------------")
-  check_stream()
+  check_stream_state()
   print(f"------------{today}------------")
 
-def check_stream():
+def check_stream_state():
   while True:
     if (is_stream_start()):
       start_record()
@@ -111,12 +111,12 @@ def start_record():
 
   pyautogui.click(420, 120)
 
-  global fail_time
-  fail_time = 0
+  global try_times
+  try_times = 0
   check_stream_url()
 
   time.sleep(10)
-  check_stream()
+  check_stream_state()
 
 def check_stream_url():
   stream_url = clipboard.paste()
@@ -124,11 +124,13 @@ def check_stream_url():
     start_record_screen()
     time.sleep(2)
     start_record_stream(stream_url)
+
+    check_record_file(stream_url)
   else:
-    global fail_time
-    fail_time += 1
-    if (fail_time > 5):
-      print_with_datetime("invalid")
+    global try_times
+    try_times += 1
+    if (try_times > 5):
+      print_with_datetime("---fail")
     else:
       time.sleep(3)
       check_stream_url()
@@ -153,6 +155,26 @@ def start_record_stream(stream_url):
   record_stream_command = "ffmpeg -i {} -map 0:v -c copy -map 0:a -c copy -strict -2 {}\{}-stream.mp4".format(stream_url, directory, today_millis)
   pyautogui.write(record_stream_command)
   pyautogui.press("enter")
+
+def check_record_file(stream_url):
+  while True:
+    global try_times
+    try_times += 1
+    if (try_times <= 5):
+      time.sleep(2)
+      if (not is_record_file_exists()):
+        start_record_stream(stream_url)
+      else:
+        break
+    else:
+      print_with_datetime("invalid")
+      break
+
+def is_record_file_exists():
+  global directory
+  global today_millis
+  record_file = Path("{}\{}-stream.mp4".format(directory, today_millis))
+  return record_file.is_file()
 
 def stop_record():
   print_with_datetime("---stop")
