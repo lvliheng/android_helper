@@ -80,6 +80,14 @@ def check_stream_state():
     else:
       time.sleep(1)
 
+      if (not is_record_file_exists()):
+        global try_times
+        try_times += 1
+        if (try_times <= 5):
+          time.sleep(11)
+          stream_url = clipboard.paste()
+          start_record_stream(stream_url)
+
 def is_after_stream_dead_line():
   global stream_dead_line    
   return datetime.now() > stream_dead_line
@@ -104,15 +112,18 @@ def start_record():
   global today_millis
   global stream_dead_line
   global stream_duration_minute
-  
+
   current = datetime.now()
   today_millis = "{}-{}".format(today, current.strftime("%f"))
   stream_dead_line = datetime.now() + timedelta(minutes = stream_duration_minute)
 
+  pyautogui.moveTo(420, 120)
+  time.sleep(1)
   pyautogui.click(420, 120)
 
   global try_times
   try_times = 0
+  time.sleep(2)
   check_stream_url()
 
   time.sleep(10)
@@ -124,8 +135,6 @@ def check_stream_url():
     start_record_screen()
     time.sleep(2)
     start_record_stream(stream_url)
-
-    check_record_file(stream_url)
   else:
     global try_times
     try_times += 1
@@ -152,23 +161,10 @@ def start_record_stream(stream_url):
 
   global directory
   global today_millis
+
   record_stream_command = "ffmpeg -i {} -map 0:v -c copy -map 0:a -c copy -strict -2 {}\{}-stream.mp4".format(stream_url, directory, today_millis)
   pyautogui.write(record_stream_command)
   pyautogui.press("enter")
-
-def check_record_file(stream_url):
-  while True:
-    global try_times
-    try_times += 1
-    if (try_times <= 5):
-      time.sleep(2)
-      if (not is_record_file_exists()):
-        start_record_stream(stream_url)
-      else:
-        break
-    else:
-      print_with_datetime("invalid")
-      break
 
 def is_record_file_exists():
   global directory
@@ -178,6 +174,7 @@ def is_record_file_exists():
 
 def stop_record():
   print_with_datetime("---stop")
+
   stop_record_stream()
   time.sleep(1)
   stop_record_screen()
@@ -199,4 +196,4 @@ if __name__=="__main__":
   try:
     init()
   except:
-    print(datetime.now(), "-cancel")
+    print_with_datetime("-cancel")
