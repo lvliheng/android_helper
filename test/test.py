@@ -15,12 +15,6 @@ import requests
 
 def test():
   print('test')
-
-  url = 'https://www.baidu.com'
-  result = requests.get(url)
-  print(result, result.status_code)
-
+ 
 if __name__=="__main__":
   test()
-  
-  

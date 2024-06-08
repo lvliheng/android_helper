@@ -4,6 +4,7 @@ import time
 import clipboard
 import schedule
 from pathlib import Path
+import os
 
 def init():
   global stream_refresh_hour
@@ -79,14 +80,7 @@ def check_stream_state():
           time.sleep(7)
     else:
       time.sleep(1)
-
-      if (not is_record_file_exists()):
-        global try_times
-        try_times += 1
-        if (try_times <= 5):
-          time.sleep(11)
-          stream_url = clipboard.paste()
-          start_record_stream(stream_url)
+      check_file()
 
 def is_after_stream_dead_line():
   global stream_dead_line    
@@ -162,15 +156,29 @@ def start_record_stream(stream_url):
   global directory
   global today_millis
 
-  record_stream_command = "ffmpeg -i {} -map 0:v -c copy -map 0:a -c copy -strict -2 {}\{}-stream.mp4".format(stream_url, directory, today_millis)
+  record_stream_command = "ffmpeg -y -i {} -map 0:v -c copy -map 0:a -c copy -strict -2 {}\{}-stream.mp4".format(stream_url, directory, today_millis)
   pyautogui.write(record_stream_command)
   pyautogui.press("enter")
 
-def is_record_file_exists():
+def check_file():
+  global try_times
+  if (not is_record_file_exists("screen")):
+    try_times += 1
+    if (try_times <= 5):
+      time.sleep(11)
+      start_record_screen()
+  elif (not is_record_file_exists("stream")):
+    try_times += 1
+    if (try_times <= 5):
+      time.sleep(11)
+      stream_url = clipboard.paste()
+      start_record_stream(stream_url)
+
+def is_record_file_exists(type):
   global directory
   global today_millis
-  record_file = Path("{}\{}-stream.mp4".format(directory, today_millis))
-  return record_file.is_file()
+  record_file = Path("{}\{}-{}.mp4".format(directory, today_millis, type))
+  return record_file.is_file() and os.path.getsize(record_file) > 0
 
 def stop_record():
   print_with_datetime("---stop")
