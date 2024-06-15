@@ -14,19 +14,21 @@ def init():
 
   start_hour = 19
   start_minute = 30
+  
+  start_job(start_hour, start_minute)
+
+def start_job(start_hour, start_minute):
+  global stream_refresh_hour
   global current
   current = datetime.now()
   start_date_time = datetime(current.year, current.month, current.day, start_hour, start_minute)
   end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_refresh_hour, start_minute)
-  
+  start_task_time = f"{start_hour:02d}:{start_minute:02d}"
+
   if (current > start_date_time and current < end_date_time):
     start()
   else:
-    start_job(start_hour, start_minute)
-
-def start_job(start_hour, start_minute):
-  start_task_time = f"{start_hour:02d}:{start_minute:02d}"
-  print("-----task will start at {}-----".format(start_task_time))
+    print("-----task will start at {}-----".format(start_task_time))
   
   schedule.every().day.at(start_task_time).do(start)
 
