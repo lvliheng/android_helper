@@ -47,6 +47,7 @@ def start():
   try_times = 0
   current = datetime.now()
   stream_dead_line = current + timedelta(hours = stream_refresh_hour)
+
   today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
   today_millis = "{}-{}".format(today, current.strftime("%f"))
 
@@ -64,27 +65,31 @@ def start():
 
 def check_stream_state():
   while True:
-    if (is_after_stream_dead_line()):
-      break
-    elif (is_stream_start()):
+    if (is_stream_start()):
       start_record()
       break
     elif (is_stream_end()):
       stop_record()
 
-      time.sleep(3)
-      pyautogui.moveTo(430, 200)
-      pyautogui.dragTo(430, 350, 1, button="left")
-      time.sleep(7)
-    elif (is_stream_empty()):
-      print_with_datetime("refresh")
-      pyautogui.click(455, 325)
-      time.sleep(3)
-      if (is_stream_start()):
-        start_record()
+      if (is_after_stream_dead_line()):
         break
       else:
-        time.sleep(7) 
+        time.sleep(3)
+        pyautogui.moveTo(430, 200)
+        pyautogui.dragTo(430, 350, 1, button="left")
+        time.sleep(7)
+    elif (is_stream_empty()):
+      if (is_after_stream_dead_line()):
+        break
+      else:
+        print_with_datetime("refresh")
+        pyautogui.click(455, 325)
+        time.sleep(3)
+        if (is_stream_start()):
+          start_record()
+          break
+        else:
+          time.sleep(7) 
     else:
       time.sleep(1)
       check_file()
