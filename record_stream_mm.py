@@ -58,6 +58,10 @@ def start():
   Path(directory).mkdir(parents = True, exist_ok = True)
 
   print(f"------------{today}------------")
+  pyautogui.moveTo(430, 200)
+  pyautogui.dragTo(430, 350, 1, button="left")
+  time.sleep(1)
+
   check_stream_state()
   time.sleep(1)
   convert_video()
