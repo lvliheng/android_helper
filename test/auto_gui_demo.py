@@ -28,7 +28,7 @@ def testMouseInfo():
 def testscreen():
   print("testscreen")
   # screenshot = pyautogui.screenshot('screen-shot.png')
-  screenshot = pyautogui.screenshot('screen-shot.png', region=(860, 20, 400, 400))
+  screenshot = pyautogui.screenshot('screen-shot.png', region=(100, 100, 400, 400))
   # screenshot = pyautogui.screenshot('screen-shot.png', region=(380, 400, 100, 600))
   screenshot.show()
 
@@ -62,11 +62,13 @@ def testPixel():
   print(pixel[0], pixel[1], pixel[2])
 
 def testDrag():
-  pyautogui.moveTo(430, 200)
-  pyautogui.dragTo(430, 350, 1, button="left")
+  pyautogui.moveTo(485, 200)
+  pyautogui.dragTo(485, 350, 1, button = "left")
 
 def testClick():
-  # pyautogui.click(1300, 20)
+  pyautogui.click(590, 420)
+  
+def testHotKey():
   pyautogui.click(450, 300)
   time.sleep(1)
   pyautogui.hotkey("ctrl", "F10")

@@ -26,7 +26,7 @@ def start_job(start_hour, start_minute):
   end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_refresh_hour, start_minute)
   start_task_time = f"{start_hour:02d}:{start_minute:02d}"
 
-  if (current > start_date_time and current < end_date_time):
+  if current > start_date_time and current < end_date_time:
     start()
   else:
     print("-----task will start at {}-----".format(start_task_time))
@@ -58,10 +58,7 @@ def start():
   Path(directory).mkdir(parents = True, exist_ok = True)
 
   print(f"------------{today}------------")
-  pyautogui.moveTo(430, 200)
-  pyautogui.dragTo(430, 350, 1, button="left")
-  time.sleep(1)
-
+  clipboard.copy("")
   check_stream_state()
   time.sleep(1)
   convert_video()
@@ -69,27 +66,26 @@ def start():
 
 def check_stream_state():
   while True:
-    if (is_stream_start()):
+    if is_stream_start():
       start_record()
       break
-    elif (is_stream_end()):
+    elif is_stream_end():
       stop_record()
 
-      if (is_after_stream_dead_line()):
+      if is_after_stream_dead_line():
         break
       else:
         time.sleep(3)
-        pyautogui.moveTo(430, 200)
-        pyautogui.dragTo(430, 350, 1, button="left")
+        refresh()
         time.sleep(7)
-    elif (is_stream_empty()):
-      if (is_after_stream_dead_line()):
+    elif is_stream_empty():
+      if is_after_stream_dead_line():
         break
       else:
         print_with_datetime("refresh")
-        pyautogui.click(455, 325)
+        refresh()
         time.sleep(3)
-        if (is_stream_start()):
+        if is_stream_start():
           start_record()
           break
         else:
@@ -103,8 +99,9 @@ def is_after_stream_dead_line():
   return datetime.now() > stream_dead_line
 
 def is_stream_empty():
-  pixel = pyautogui.pixel(455, 325)
-  return pixel == (80, 82, 255)
+  first_item_cover_pixel = pyautogui.pixel(420, 120)
+  refresh_button_pixel = pyautogui.pixel(455, 325)
+  return refresh_button_pixel == (80, 82, 255) or first_item_cover_pixel == (238, 238, 238)
 
 def is_stream_start():
   pixel = pyautogui.pixel(420, 120)
@@ -113,6 +110,43 @@ def is_stream_start():
 def is_stream_end():
   pixel = pyautogui.pixel(450, 300)
   return pixel == (80, 82, 255)
+
+def refresh():
+  first_item_cover_pixel = pyautogui.pixel(420, 120)
+  refresh_button_pixel = pyautogui.pixel(455, 325)
+  if refresh_button_pixel == (80, 82, 255):
+    click_refresh()
+  elif first_item_cover_pixel == (238, 238, 238):
+    drag_refresh()
+  else:
+    drag_refresh()
+
+def click_refresh():
+  pyautogui.click(455, 325)
+
+def drag_refresh():
+  pyautogui.moveTo(485, 200)
+  pyautogui.dragTo(485, 350, 1, button = "left")
+
+def click_start():
+  pyautogui.moveTo(420, 120)
+  time.sleep(1)
+  pyautogui.click(420, 120)
+
+def click_window_left_top():
+  pyautogui.click(100, 100)
+
+def click_window_right_top():
+  pyautogui.click(1000, 20)
+
+def click_stop():
+  pyautogui.click(450, 300)
+
+def click_close_record_list():
+  pyautogui.click(860, 20)
+
+def click_window_left_bottom():
+  pyautogui.click(50, 560)
 
 def start_record():
   print_with_datetime("--start")
@@ -127,12 +161,10 @@ def start_record():
   today_millis = "{}-{}".format(today, current.strftime("%f"))
   stream_dead_line = datetime.now() + timedelta(minutes = stream_duration_minute)
 
-  pyautogui.moveTo(420, 120)
-  time.sleep(1)
-  pyautogui.click(420, 120)
+  click_start()
 
   time.sleep(30)
-  if (not is_stream_end()):
+  if not is_stream_end():
     check_stream_url()    
 
   time.sleep(10)
@@ -140,25 +172,25 @@ def start_record():
 
 def check_stream_url():
   stream_url = clipboard.paste()
-  if (stream_url.startswith("rtmp:")):
+  if stream_url.startswith("rtmp:"):
     start_record_screen()
     time.sleep(2)
     start_record_stream(stream_url)
   else:
     global try_times
     try_times += 1
-    if (try_times > 5):
+    if try_times > 5:
       print_with_datetime("---fail")
     else:
       time.sleep(3)
       check_stream_url()
 
 def start_record_screen():
-  pyautogui.click(240, 240)
+  click_window_left_top()
   pyautogui.press("F10")
 
 def start_record_stream(stream_url):
-  pyautogui.click(1000, 20)
+  click_window_right_top()
   pyautogui.hotkey("ctrl", "c")
 
   global directory
@@ -170,9 +202,9 @@ def start_record_stream(stream_url):
 
 def check_file():
   global try_times
-  if (not is_record_file_exists("stream")):
+  if not is_record_file_exists("stream"):
     try_times += 1
-    if (try_times <= 5):
+    if try_times <= 5:
       time.sleep(11)
       stream_url = clipboard.paste()
       start_record_stream(stream_url)
@@ -191,18 +223,20 @@ def stop_record():
   stop_record_screen()
 
 def stop_record_screen():
-  pyautogui.click(450, 300)
+  click_stop()
   time.sleep(1)
   pyautogui.hotkey("ctrl", "F10")
   time.sleep(1)
-  pyautogui.click(860, 20)
+  click_close_record_list()
+  time.sleep(1)
+  refresh()
 
 def stop_record_stream():
-  pyautogui.click(1000, 20)
+  click_window_right_top()
   pyautogui.press("q")
 
 def convert_video():
-  pyautogui.click(50, 560)
+  click_window_left_bottom()
   pyautogui.hotkey("ctrl", "c")
 
   convert_video_command = "convert_video"

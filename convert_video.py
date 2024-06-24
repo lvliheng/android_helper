@@ -20,11 +20,11 @@ def check_file_record():
   global record_directory
   global stream_directory
 
-  if  (Path(record_directory).is_dir()):
+  if Path(record_directory).is_dir():
     for file in os.listdir(record_directory):
       old_name = "{}\{}".format(record_directory, file)
 
-      if (not file.startswith("_") and file.endswith(".mp4") and os.path.getsize(old_name) > 0):
+      if not file.startswith("_") and file.endswith(".mp4") and os.path.getsize(old_name) > 20 * 1024 * 1024:
         global today
         current = datetime.now()
         today_millis = "{}-{}".format(today, current.strftime("%f"))

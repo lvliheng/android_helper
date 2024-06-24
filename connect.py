@@ -9,7 +9,7 @@ def checkDevices(selectedDevice):
   connected = os.popen("adb devices").readlines()
   devices = [connected[i][0:-8] for i in range(1, len(connected) - 1)]
 
-  if (len(devices) == 0):
+  if len(devices) == 0:
     print("no devices found")
   else:
     if selectedDevice != "":
@@ -18,7 +18,7 @@ def checkDevices(selectedDevice):
       else:
         print(selectedDevice + " not found")
     else:
-      if (len(devices) == 1):
+      if len(devices) == 1:
         start(devices[0])
       else:
         print("please select a device")
