@@ -74,8 +74,8 @@ def testHotKey():
   pyautogui.hotkey("ctrl", "F10")
 
 if __name__=="__main__":
-  testscreen()
+  # testscreen()
   # autoClick()
-  # testPixel()
+  testPixel()
   # testDrag()
   # testClick()

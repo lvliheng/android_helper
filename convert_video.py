@@ -39,4 +39,7 @@ def convert_file_format(input_file, output_file):
   os.system(convert_command)
 
 if __name__=="__main__":
-  init()
+  try:
+    init()
+  except:
+    None

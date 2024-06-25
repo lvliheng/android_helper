@@ -233,4 +233,7 @@ def print_with_datetime(text):
   print(datetime.now(), text)
 
 if __name__=="__main__":
-  init()
+  try:
+    init()
+  except:
+    print_with_datetime("-cancel")
