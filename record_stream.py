@@ -188,7 +188,7 @@ def start_record_stream(stream_url):
   global directory
   global today_millis
 
-  record_stream_command = "ffmpeg -y -i {} -map 0:v -c copy -map 0:a -c copy -strict -2 {}\{}-stream.mp4".format(stream_url, directory, today_millis)
+  record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}\{}-stream.mp4".format(stream_url, directory, today_millis)
   pyautogui.write(record_stream_command)
   pyautogui.press("enter")
 

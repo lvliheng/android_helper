@@ -99,22 +99,22 @@ def is_after_stream_dead_line():
   return datetime.now() > stream_dead_line
 
 def is_stream_empty():
-  first_item_cover_pixel = pyautogui.pixel(420, 120)
-  refresh_button_pixel = pyautogui.pixel(455, 325)
-  return refresh_button_pixel == (80, 82, 255) or first_item_cover_pixel == (238, 238, 238)
+  first_item_cover_pixel = pyautogui.pixel(320, 220)
+  refresh_button_pixel = pyautogui.pixel(430, 640)
+  return refresh_button_pixel == (199, 7, 22) or first_item_cover_pixel == (238, 238, 238)
 
 def is_stream_start():
-  pixel = pyautogui.pixel(420, 120)
+  pixel = pyautogui.pixel(320, 220)
   return pixel == (255, 255, 255)
 
 def is_stream_end():
-  pixel = pyautogui.pixel(450, 300)
-  return pixel == (80, 82, 255)
+  pixel = pyautogui.pixel(330, 620)
+  return pixel == (199, 7, 22)
 
 def refresh():
-  first_item_cover_pixel = pyautogui.pixel(420, 120)
-  refresh_button_pixel = pyautogui.pixel(455, 325)
-  if refresh_button_pixel == (80, 82, 255):
+  first_item_cover_pixel = pyautogui.pixel(320, 220)
+  refresh_button_pixel = pyautogui.pixel(430, 640)
+  if refresh_button_pixel == (199, 7, 22):
     click_refresh()
   elif first_item_cover_pixel == (238, 238, 238):
     drag_refresh()
@@ -122,31 +122,31 @@ def refresh():
     drag_refresh()
 
 def click_refresh():
-  pyautogui.click(455, 325)
+  pyautogui.click(430, 640)
 
 def drag_refresh():
-  pyautogui.moveTo(485, 200)
-  pyautogui.dragTo(485, 350, 1, button = "left")
+  pyautogui.moveTo(485, 300)
+  pyautogui.dragTo(485, 800, 1, button = "left")
 
 def click_start():
-  pyautogui.moveTo(420, 120)
+  pyautogui.moveTo(320, 220)
   time.sleep(1)
-  pyautogui.click(420, 120)
+  pyautogui.click(320, 220)
 
 def click_window_left_top():
-  pyautogui.click(100, 100)
+  pyautogui.click(640, 20)
 
 def click_window_right_top():
   pyautogui.click(1000, 20)
 
 def click_stop():
-  pyautogui.click(450, 300)
+  pyautogui.click(330, 620)
 
 def click_close_record_list():
-  pyautogui.click(860, 20)
+  pyautogui.click(860, 260)
 
-def click_window_left_bottom():
-  pyautogui.click(50, 560)
+def click_window_right_bottom():
+  pyautogui.click(1000, 560)
 
 def start_record():
   print_with_datetime("--start")
@@ -196,7 +196,7 @@ def start_record_stream(stream_url):
   global directory
   global today_millis
 
-  record_stream_command = "ffmpeg -y -i {} -map 0:v -c copy -map 0:a -c copy -strict -2 {}\{}-stream.mp4".format(stream_url, directory, today_millis)
+  record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}\{}-stream.mp4".format(stream_url, directory, today_millis)
   pyautogui.write(record_stream_command)
   pyautogui.press("enter")
 
@@ -236,7 +236,7 @@ def stop_record_stream():
   pyautogui.press("q")
 
 def convert_video():
-  click_window_left_bottom()
+  click_window_right_bottom()
   pyautogui.hotkey("ctrl", "c")
 
   convert_video_command = "convert_video"

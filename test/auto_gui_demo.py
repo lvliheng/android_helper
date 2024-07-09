@@ -16,7 +16,7 @@ def testLocateOnScreen():
 def testLocateCenterOnScreen():
   print('testLocateCenterOnScreen')
   # x, y = pyautogui.locateCenterOnScreen('share.jpg', grayscale=True)
-  x, y = pyautogui.locateCenterOnScreen('images/share.jpg', region=(0, 0, 450, 1200))
+  x, y = pyautogui.locateCenterOnScreen('images/heart.png', region=(670, 530, 100, 100))
   print(x)
   print(y)
 
@@ -28,7 +28,7 @@ def testMouseInfo():
 def testscreen():
   print("testscreen")
   # screenshot = pyautogui.screenshot('screen-shot.png')
-  screenshot = pyautogui.screenshot('screen-shot.png', region=(100, 100, 400, 400))
+  screenshot = pyautogui.screenshot('screen-shot.png', region=(320, 220, 400, 400))
   # screenshot = pyautogui.screenshot('screen-shot.png', region=(380, 400, 100, 600))
   screenshot.show()
 
@@ -54,16 +54,17 @@ def autoClick():
   # print("======copyClick======")
   # buttonClick('images/copy.jpg', (0, 760, 500, 300))
 
-  buttonClick('images/third-app.jpg', (0, 760, 500, 300))
+  # buttonClick('images/third-app.jpg', (0, 760, 500, 300))
+  buttonClick('images/yellow.jpg', (685, 885, 60, 60))
 
 def testPixel():
-  pixel = pyautogui.pixel(420, 120)
+  pixel = pyautogui.pixel(330, 620)
   print(pixel)
   print(pixel[0], pixel[1], pixel[2])
 
 def testDrag():
-  pyautogui.moveTo(485, 200)
-  pyautogui.dragTo(485, 350, 1, button = "left")
+  pyautogui.moveTo(485, 900)
+  pyautogui.dragTo(485, 200, 1, button = "left")
 
 def testClick():
   pyautogui.click(590, 420)

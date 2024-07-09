@@ -12,15 +12,28 @@ from pathlib import Path
 import pyautogui
 import subprocess
 import requests
+from PIL import Image
 
 def test():
   print('test')
 
+  test_command = "adb shell \"dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'\""
+  os.system(test_command)
+
   global app_package
   app_package = ""
   # check_player_state()
-  check_app_state()
+  # check_app_state()
  
+def compress():
+  input_file = "C:\\Users\\admin\\Desktop\\8.png"
+  output_file = "C:\\Users\\admin\\Desktop\\9.png"
+  file = Image.open(input_file)
+  # file.resize((876, 659))
+  file.convert("P", palette=Image.ADAPTIVE, colors=256)
+  file.save(output_file, optimize=True, quality=85)
+  file.close()
+
 def check_player_state():
   player_state_command = "mm api -v 0 player_state"
   player_state = os.popen(player_state_command).readlines()
@@ -70,4 +83,5 @@ def close_app():
   os.system(close_app_command)
 
 if __name__=="__main__":
-  test()
+  # test()
+  compress()
