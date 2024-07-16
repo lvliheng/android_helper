@@ -7,6 +7,9 @@ from pathlib import Path
 import os
 
 def init():
+  global app_package
+  app_package = "com.szbb.life"
+
   global stream_refresh_hour
   stream_refresh_hour = 1
   global stream_duration_minute
@@ -60,12 +63,19 @@ def start():
   print(f"------------{today}------------")
   clipboard.copy("")
   check_stream_state()
-  time.sleep(1)
+  time.sleep(10)
   convert_video()
   print(f"------------{today}------------")
 
 def check_stream_state():
   while True:
+    # if not is_player_started() or not is_app_running():
+    #   if is_after_stream_dead_line():
+    #     break
+    #   else:
+    #     time.sleep(10)
+    #     continue
+    # el
     if is_stream_start():
       start_record()
       break
@@ -101,8 +111,7 @@ def is_after_stream_dead_line():
 def is_stream_empty():
   first_item_cover_pixel = pyautogui.pixel(320, 220)
   refresh_button_pixel = pyautogui.pixel(430, 640)
-  return refresh_button_pixel == (199, 7, 22) or first_item_cover_pixel == (238, 238, 238)
-
+  return (refresh_button_pixel == (199, 7, 22) or first_item_cover_pixel == (238, 238, 238))
 def is_stream_start():
   pixel = pyautogui.pixel(320, 220)
   return pixel == (255, 255, 255)
@@ -110,6 +119,31 @@ def is_stream_start():
 def is_stream_end():
   pixel = pyautogui.pixel(330, 620)
   return pixel == (199, 7, 22)
+
+def is_player_started():
+  player_state_command = "mm api -v 0 player_state"
+  player_state = os.popen(player_state_command).readlines()
+  if len(player_state) > 0:
+    result = player_state[len(player_state) - 1]
+    if "state=start_finished" in result:
+      return True
+    else:
+      return False
+  else:
+    return False
+
+def is_app_running():
+  global app_package
+  app_state_command = "mm api -v 0 app_state {}".format(app_package)
+  app_state = os.popen(app_state_command).readlines()
+  if (len(app_state) > 0):
+      result = app_state[len(app_state) - 1]
+      if ("state=running" in result):
+        return True
+      else:
+        return False
+  else:
+    return False
 
 def refresh():
   first_item_cover_pixel = pyautogui.pixel(320, 220)
@@ -144,9 +178,6 @@ def click_stop():
 
 def click_close_record_list():
   pyautogui.click(860, 260)
-
-def click_window_right_bottom():
-  pyautogui.click(1000, 560)
 
 def start_record():
   print_with_datetime("--start")
@@ -236,7 +267,7 @@ def stop_record_stream():
   pyautogui.press("q")
 
 def convert_video():
-  click_window_right_bottom()
+  click_window_right_top()
   pyautogui.hotkey("ctrl", "c")
 
   convert_video_command = "convert_video"
@@ -247,7 +278,8 @@ def print_with_datetime(text):
   print(datetime.now(), text)
 
 if __name__=="__main__":
-  try:
-    init()
-  except:
-    print_with_datetime("-cancel")
+  init()
+  # try:
+  #   init()
+  # except:
+  #   print_with_datetime("-cancel")
