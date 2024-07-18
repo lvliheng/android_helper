@@ -8,7 +8,7 @@ import os
 
 def init():
   global app_package
-  app_package = "com.szbb.life"
+  app_package = ""
 
   global stream_refresh_hour
   stream_refresh_hour = 1
@@ -16,7 +16,7 @@ def init():
   stream_duration_minute = 30
 
   start_hour = 19
-  start_minute = 30
+  start_minute = 28
   
   start_job(start_hour, start_minute)
 
@@ -61,22 +61,26 @@ def start():
   Path(directory).mkdir(parents = True, exist_ok = True)
 
   print(f"------------{today}------------")
+  launch_player()
+  time.sleep(60)
+
   clipboard.copy("")
   check_stream_state()
-  time.sleep(10)
+  shutdown_player()
+  
+  time.sleep(60)
   convert_video()
   print(f"------------{today}------------")
 
 def check_stream_state():
   while True:
-    # if not is_player_started() or not is_app_running():
-    #   if is_after_stream_dead_line():
-    #     break
-    #   else:
-    #     time.sleep(10)
-    #     continue
-    # el
-    if is_stream_start():
+    if not is_app_running():
+      if is_after_stream_dead_line():
+        break
+      else:
+        time.sleep(10)
+        continue
+    elif is_stream_start():
       start_record()
       break
     elif is_stream_end():
@@ -119,18 +123,6 @@ def is_stream_start():
 def is_stream_end():
   pixel = pyautogui.pixel(330, 620)
   return pixel == (199, 7, 22)
-
-def is_player_started():
-  player_state_command = "mm api -v 0 player_state"
-  player_state = os.popen(player_state_command).readlines()
-  if len(player_state) > 0:
-    result = player_state[len(player_state) - 1]
-    if "state=start_finished" in result:
-      return True
-    else:
-      return False
-  else:
-    return False
 
 def is_app_running():
   global app_package
@@ -259,12 +251,18 @@ def stop_record_screen():
   pyautogui.hotkey("ctrl", "F10")
   time.sleep(1)
   click_close_record_list()
-  time.sleep(1)
-  refresh()
 
 def stop_record_stream():
   click_window_right_top()
   pyautogui.press("q")
+
+def launch_player():
+  click_window_right_top()
+  pyautogui.hotkey("ctrl", "c")
+
+  convert_video_command = "launch_player"
+  pyautogui.write(convert_video_command)
+  pyautogui.press("enter")
 
 def convert_video():
   click_window_right_top()
@@ -273,6 +271,10 @@ def convert_video():
   convert_video_command = "convert_video"
   pyautogui.write(convert_video_command)
   pyautogui.press("enter")
+
+def shutdown_player():
+  shutdown_player_command = "mm api -v 0 shutdown_player"
+  os.popen(shutdown_player_command)
 
 def print_with_datetime(text):
   print(datetime.now(), text)

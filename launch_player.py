@@ -1,6 +1,5 @@
 import os
 import time
-import schedule
 from datetime import datetime
 import pyautogui
 
@@ -8,38 +7,10 @@ def init():
   global app_package
   app_package = ""
 
-  start_hour = 19
-  start_minute = 20
-  
-  start_job(start_hour, start_minute)
-
-def start_job(start_hour, start_minute):
-  stream_refresh_hour = 1
-  global current
-  current = datetime.now()
-  global today
-  today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
-  start_date_time = datetime(current.year, current.month, current.day, start_hour, start_minute)
-  global end_date_time
-  end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_refresh_hour, start_minute)
-  start_task_time = f"{start_hour:02d}:{start_minute:02d}"
-
-  if current > start_date_time and current < end_date_time:
-    start()
-  else:
-    print("-----task will start at {}-----".format(start_task_time))
-  
-  schedule.every().day.at(start_task_time).do(start)
-
-  while True:
-    schedule.run_pending()
-    time.sleep(1)
+  start()
 
 def start():
-  global today
-  print(f"------------{today}------------")
   check_player_state()
-  print(f"------------{today}------------")
 
 def check_player_state():
   shutdown_player()
