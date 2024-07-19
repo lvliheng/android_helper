@@ -260,7 +260,8 @@ def launch_player():
   click_window_right_top()
   pyautogui.hotkey("ctrl", "c")
 
-  convert_video_command = "launch_player"
+  global app_package
+  convert_video_command = "launch_player {}".format(app_package)
   pyautogui.write(convert_video_command)
   pyautogui.press("enter")
 

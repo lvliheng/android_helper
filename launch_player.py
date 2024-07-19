@@ -1,15 +1,29 @@
 import os
 import time
 from datetime import datetime
+import argparse
 import pyautogui
 
 def init():
   global app_package
-  app_package = ""
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-p", "--package", help = "package name")
+
+  args = parser.parse_args()
+  if args.package != None:
+      app_package = args.package
 
   start()
 
 def start():
+  pyautogui.hotkey("ctrl", "win", "left")
+  time.sleep(1)
+  pyautogui.hotkey("ctrl", "win", "left")
+  time.sleep(1)
+  click_window_left_top()
+  time.sleep(1)
+
   check_player_state()
 
 def check_player_state():
