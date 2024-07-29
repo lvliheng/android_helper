@@ -27,8 +27,8 @@ def start():
   check_player_state()
 
 def check_player_state():
-  shutdown_player()
-  time.sleep(10)
+  # shutdown_player()
+  # time.sleep(10)
 
   player_state_command = "mm api -v 0 player_state"
 
@@ -38,10 +38,10 @@ def check_player_state():
       print("++++++++player state error++++++++")
       break
 
-    time.sleep(10)
+    time.sleep(20)
 
     player_state = os.popen(player_state_command).readlines()
-    
+
     if (len(player_state) > 0):
       result = player_state[len(player_state) - 1]
       if ("result=-2" in result):
@@ -70,7 +70,7 @@ def check_app_state():
     if try_times > 5:
       break
 
-    time.sleep(10)
+    time.sleep(20)
 
     app_state = os.popen(app_state_command).readlines()
 
@@ -108,9 +108,9 @@ def check_button():
   while True:
     time.sleep(2)
 
-    yellow_pixel = pyautogui.pixel(712, 910)
+    yellow_pixel = pyautogui.pixel(910, 915)
     yellow_exist = yellow_pixel == (222, 197, 69)
-    white_pixel = pyautogui.pixel(222, 972)
+    white_pixel = pyautogui.pixel(458, 964)
     white_exist = white_pixel == (255, 255, 255)
     if yellow_exist and white_exist:
       click_button()
@@ -122,14 +122,14 @@ def check_button():
   return is_succeed
 
 def click_button():
-  pyautogui.click(710, 830)
+  pyautogui.click(910, 850)
 
 def drag_next():
   pyautogui.moveTo(485, 900)
   pyautogui.dragTo(485, 200, 1, button = "left")
 
 def click_window_left_top():
-  pyautogui.click(640, 20) 
+  pyautogui.click(600, 20) 
 
 def print_with_datetime(text):
   print(datetime.now(), text)

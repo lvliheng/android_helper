@@ -10,7 +10,7 @@ def init():
   root = "D:\_temp\stream\\"
   global record_directory
   global stream_directory
-  record_directory = "{}record".format(root)
+  record_directory = "{}ScreenRecords".format(root)
   stream_directory = "{}{}".format(root, today)
   Path(stream_directory).mkdir(parents = True, exist_ok = True)
 

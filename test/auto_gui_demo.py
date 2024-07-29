@@ -25,13 +25,6 @@ def testMouseInfo():
   all = pyautogui.locateAllOnScreen('images/share.jpg')
   print(list(all))
 
-def testscreen():
-  print("testscreen")
-  # screenshot = pyautogui.screenshot('screen-shot.png')
-  screenshot = pyautogui.screenshot('screen-shot.png', region=(320, 220, 400, 400))
-  # screenshot = pyautogui.screenshot('screen-shot.png', region=(380, 400, 100, 600))
-  screenshot.show()
-
 def buttonClick(pic, picRegion):
   try:
     # sharelocation = pyautogui.locateOnScreen(pic, confidence=0.7, region=(380, 400, 100, 600))
@@ -57,11 +50,6 @@ def autoClick():
   # buttonClick('images/third-app.jpg', (0, 760, 500, 300))
   buttonClick('images/yellow.jpg', (685, 885, 60, 60))
 
-def testPixel():
-  pixel = pyautogui.pixel(330, 620)
-  print(pixel)
-  print(pixel[0], pixel[1], pixel[2])
-
 def testDrag():
   pyautogui.moveTo(485, 900)
   pyautogui.dragTo(485, 200, 1, button = "left")
@@ -74,9 +62,22 @@ def testHotKey():
   time.sleep(1)
   pyautogui.hotkey("ctrl", "F10")
 
+def testscreen():
+  print("testscreen")
+  # screenshot = pyautogui.screenshot('screen-shot.png')
+  screenshot = pyautogui.screenshot('screen-shot.png', region=(910, 850, 400, 400))
+  # screenshot = pyautogui.screenshot('screen-shot.png', region=(380, 400, 100, 600))
+  screenshot.show()
+
+
+def testPixel():
+  pixel = pyautogui.pixel(910, 915)
+  print(pixel)
+  print(pixel[0], pixel[1], pixel[2])
+
 if __name__=="__main__":
-  # testscreen()
+  testscreen()
+  # testPixel()
   # autoClick()
-  testPixel()
   # testDrag()
   # testClick()
