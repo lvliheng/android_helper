@@ -12,7 +12,9 @@ def init():
 
   args = parser.parse_args()
   if args.package != None:
-      app_package = args.package
+    app_package = args.package
+  else:
+    app_package = ""
 
   start()
 
@@ -27,8 +29,8 @@ def start():
   check_player_state()
 
 def check_player_state():
-  # shutdown_player()
-  # time.sleep(10)
+  shutdown_player()
+  time.sleep(10)
 
   player_state_command = "mm api -v 0 player_state"
 
@@ -63,6 +65,10 @@ def shutdown_player():
 
 def check_app_state():
   global app_package
+
+  if app_package == "":
+    return
+
   app_state_command = "mm api -v 0 app_state {}".format(app_package)
   
   try_times = 0

@@ -5,10 +5,18 @@ import clipboard
 import schedule
 from pathlib import Path
 import os
+import argparse
 
 def init():
   global app_package
-  app_package = ""
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-p", "--package", help = "package name")
+
+  args = parser.parse_args()
+  if args.package != None:
+    app_package = args.package
+  else:
+    app_package = ""
 
   global stream_refresh_hour
   stream_refresh_hour = 1
@@ -128,6 +136,10 @@ def is_stream_end():
 
 def is_app_running():
   global app_package
+
+  if app_package == "":
+    return True
+
   app_state_command = "mm api -v 0 app_state {}".format(app_package)
   app_state = os.popen(app_state_command).readlines()
   if (len(app_state) > 0):

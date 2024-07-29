@@ -16,8 +16,16 @@ from PIL import Image
 
 def test():
   global app_package
-  app_package = "com.szbb.life"
-  print('test: is_player_started:', is_player_started(), "is_app_running: ", is_app_running())
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-p", "--package", help = "package name")
+
+  args = parser.parse_args()
+  if args.package != None:
+    app_package = args.package
+  else:
+    app_package = ""
+
+  print("test: is_app_running: ", is_app_running())
 
 def is_player_started():
   player_state_command = "mm api -v 0 player_state"
@@ -33,6 +41,10 @@ def is_player_started():
 
 def is_app_running():
   global app_package
+
+  if app_package == "":
+    return True
+
   app_state_command = "mm api -v 0 app_state {}".format(app_package)
   app_state = os.popen(app_state_command).readlines()
   if (len(app_state) > 0):
