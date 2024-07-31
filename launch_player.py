@@ -16,6 +16,9 @@ def init():
   else:
     app_package = ""
 
+  global need_check_app_state
+  need_check_app_state = False
+
   start()
 
 def start():
@@ -32,6 +35,8 @@ def check_player_state():
   shutdown_player()
   time.sleep(10)
 
+  global need_check_app_state
+
   player_state_command = "mm api -v 0 player_state"
 
   try_times = 0
@@ -40,20 +45,24 @@ def check_player_state():
       print("++++++++player state error++++++++")
       break
 
-    time.sleep(20)
-
     player_state = os.popen(player_state_command).readlines()
 
     if (len(player_state) > 0):
       result = player_state[len(player_state) - 1]
       if ("result=-2" in result):
+        need_check_app_state = True
         launch_player()
       elif ("state=start_finished" in result):
         click_window_left_top()
-        check_app_state()
+        if need_check_app_state:
+          check_app_state()
+        else:
+          print_with_datetime("--ready")
         break
       else:
         try_times += 1
+
+    time.sleep(20)
 
 def launch_player():
   launch_player_command = "mm api -v 0 launch_player"

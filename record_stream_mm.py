@@ -24,7 +24,7 @@ def init():
   stream_duration_minute = 30
 
   start_hour = 19
-  start_minute = 30
+  start_minute = 28
   
   start_job(start_hour, start_minute)
 
@@ -68,15 +68,27 @@ def start():
   directory = "{}{}".format(root, today)
   Path(directory).mkdir(parents = True, exist_ok = True)
 
+  global file_name_tail_stream
+  file_name_tail_stream = "stream"
+
   print(f"------------{today}------------")
-  # launch_player()
-  # time.sleep(60)
+  if is_app_running():
+    time.sleep(3)
+    pyautogui.hotkey("ctrl", "win", "left")
+    time.sleep(1)
+    pyautogui.hotkey("ctrl", "win", "left")
+    time.sleep(1)
+    click_window_left_top()
+    time.sleep(1)
+  else:
+    launch_player()
+    time.sleep(60)
 
   clipboard.copy("")
   check_stream_state()
   # shutdown_player()
   
-  time.sleep(60)
+  time.sleep(20)
   convert_video()
   print(f"------------{today}------------")
 
@@ -197,7 +209,7 @@ def start_record():
   current = datetime.now()
   today_millis = "{}-{}".format(today, current.strftime("%f"))
   stream_dead_line = datetime.now() + timedelta(minutes = stream_duration_minute)
-
+  
   click_start()
 
   time.sleep(30)
@@ -235,16 +247,18 @@ def start_record_stream(stream_url):
 
   global directory
   global today_millis
+  global file_name_tail_stream
 
-  record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}\{}-stream.mp4".format(stream_url, directory, today_millis)
+  record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}\{}-{}.mp4".format(stream_url, directory, today_millis, file_name_tail_stream)
   pyautogui.write(record_stream_command)
-  pyautogui.press("Enter")
+  pyautogui.press("enter")
 
 def check_file():
   stream_url = clipboard.paste()
   if stream_url.startswith("rtmp:"):
     global try_times
-    if not is_record_file_exists("stream"):
+    global file_name_tail_stream
+    if not is_record_file_exists(file_name_tail_stream):
       try_times += 1
       if try_times <= 5:
         time.sleep(11)
