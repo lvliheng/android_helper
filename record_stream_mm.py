@@ -82,11 +82,11 @@ def start():
     time.sleep(1)
   else:
     launch_player()
-    time.sleep(60)
+    time.sleep(120)
 
   clipboard.copy("")
   check_stream_state()
-  # shutdown_player()
+  shutdown_player()
   
   time.sleep(20)
   convert_video()
@@ -127,7 +127,6 @@ def check_stream_state():
     else:
       time.sleep(1)
       check_file()
-      click_window_left_top()
 
 def is_after_stream_dead_line():
   global stream_dead_line
@@ -213,10 +212,13 @@ def start_record():
   click_start()
 
   time.sleep(30)
+  global try_times
   if not is_stream_end():
+    try_times = 0
     check_stream_url()    
 
   time.sleep(10)
+  try_times = 0
   check_stream_state()
 
 def check_stream_url():
@@ -236,7 +238,6 @@ def check_stream_url():
 
 def start_record_screen():
   click_window_left_top()
-  pyautogui.hotkey("win", "alt", "r")
 
   time.sleep(1)
   pyautogui.press("f10")
@@ -254,16 +255,15 @@ def start_record_stream(stream_url):
   pyautogui.press("enter")
 
 def check_file():
-  stream_url = clipboard.paste()
-  if stream_url.startswith("rtmp:"):
+  global file_name_tail_stream
+  if not is_record_file_exists(file_name_tail_stream):
     global try_times
-    global file_name_tail_stream
-    if not is_record_file_exists(file_name_tail_stream):
-      try_times += 1
-      if try_times <= 5:
-        time.sleep(11)
-        stream_url = clipboard.paste()
-        start_record_stream(stream_url)
+    try_times += 1
+    if try_times <= 5:
+      time.sleep(11)
+      check_stream_url()
+  else:
+    click_window_left_top()
 
 def is_record_file_exists(type):
   global directory
@@ -280,8 +280,6 @@ def stop_record():
 
 def stop_record_screen():
   click_stop()
-  time.sleep(1)
-  pyautogui.hotkey("win", "alt", "r")
   
   time.sleep(1)
   pyautogui.hotkey("ctrl", "f10")

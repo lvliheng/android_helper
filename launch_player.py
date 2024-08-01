@@ -62,7 +62,7 @@ def check_player_state():
       else:
         try_times += 1
 
-    time.sleep(20)
+    time.sleep(10)
 
 def launch_player():
   launch_player_command = "mm api -v 0 launch_player"
@@ -85,17 +85,14 @@ def check_app_state():
     if try_times > 5:
       break
 
-    time.sleep(20)
+    time.sleep(10)
 
     app_state = os.popen(app_state_command).readlines()
-
     if (len(app_state) > 0):
       result = app_state[len(app_state) - 1]
       if ("result=-2" in result):
         launch_app()
       elif ("state=stopped" in result):
-        close_app()
-        time.sleep(10)
         launch_app()
       elif ("state=running" in result):
         if check_button():
