@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import pyautogui
+pyautogui.FAILSAFE = False
 import time
 import clipboard
 import schedule
@@ -133,15 +134,19 @@ def is_after_stream_dead_line():
   return datetime.now() > stream_dead_line
 
 def is_stream_empty():
+  time.sleep(.4)
   first_item_cover_pixel = pyautogui.pixel(320, 220)
+  time.sleep(.4)
   refresh_button_pixel = pyautogui.pixel(430, 640)
   return (refresh_button_pixel == (199, 7, 22) or first_item_cover_pixel == (238, 238, 238))
 
 def is_stream_start():
+  time.sleep(.4)
   pixel = pyautogui.pixel(320, 220)
   return pixel == (255, 255, 255)
 
 def is_stream_end():
+  time.sleep(.4)
   pixel = pyautogui.pixel(330, 620)
   return pixel == (199, 7, 22)
 
@@ -163,7 +168,9 @@ def is_app_running():
     return False
 
 def refresh():
+  time.sleep(.4)
   first_item_cover_pixel = pyautogui.pixel(320, 220)
+  time.sleep(.4)
   refresh_button_pixel = pyautogui.pixel(430, 640)
   if refresh_button_pixel == (199, 7, 22):
     click_refresh()
