@@ -60,7 +60,6 @@ def start():
   try_times = 0
   current = datetime.now()
   stream_dead_line = current + timedelta(hours = stream_refresh_hour)
-  
 
   today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
   today_millis = "{}-{}".format(today, current.strftime("%f"))
@@ -197,7 +196,7 @@ def drag_refresh():
 
 def click_start():
   pyautogui.moveTo(320, 220)
-  time.sleep(1)
+  time.sleep(.1)
   pyautogui.click(320, 220)
 
 def click_window_left_top():
@@ -232,15 +231,15 @@ def start_record():
   
   time.sleep(1)
   initConfig()
+  
+  time.sleep(1)
+  initCount()
 
-  time.sleep(28)
+  time.sleep(20)
   global try_times
   if not is_stream_end():
     try_times = 0
     check_stream_url()    
-
-  time.sleep(5)
-  initCount()
 
   time.sleep(10)
   try_times = 0
@@ -277,6 +276,7 @@ def start_record_stream(stream_url):
 
   record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}\{}-{}.mp4".format(stream_url, directory, today_millis, file_name_tail_stream)
   pyautogui.write(record_stream_command)
+  time.sleep(.1)
   pyautogui.press("enter")
 
 def check_file():
@@ -351,6 +351,7 @@ def launch_player():
   global app_package
   convert_video_command = "launch_player {}".format(app_package)
   pyautogui.write(convert_video_command)
+  time.sleep(.1)
   pyautogui.press("enter")
 
 def convert_video():
@@ -359,6 +360,7 @@ def convert_video():
 
   convert_video_command = "convert_video"
   pyautogui.write(convert_video_command)
+  time.sleep(.1)
   pyautogui.press("enter")
 
 def shutdown_player():
@@ -372,8 +374,8 @@ def initCount():
   global last_time
   last_time = round(time.time())
   global maxCount
-  randomCount = random.randint(-10000, 10000)
-  maxCount = 170000 + randomCount
+  randomCount = random.randint(-10 * 1000, 10 * 1000)
+  maxCount = 170 * 1000 + randomCount
 
   if not isListOpen():
     openList()
@@ -481,9 +483,7 @@ def updateCount():
 
   global maxCount
   if current <= 0 or current > maxCount:
-      if not isListOpen() or is_stream_end():
-        return
-      time.sleep(1)
+      time.sleep(.1)
   elif current - last_count > 3000:
       last_count = current
       if not isListOpen() or is_stream_end():
@@ -493,11 +493,11 @@ def updateCount():
       if current < 10 * 1000:
         add = random.randint(800, 1200)
       elif current > 120 * 1000:
-        duration = random.randint(2, 5)
+        duration = random.randint(2, 4)
         time.sleep(duration)
         add = random.randint(600, 1000)
       else:
-        duration = random.randint(2, 5)
+        duration = random.randint(1, 3)
         time.sleep(duration)
         add = random.randint(800, 1200)
       current += add
@@ -529,8 +529,7 @@ def print_with_datetime(text):
   print(datetime.now(), text)
 
 if __name__=="__main__":
-  init()
-  # try:
-  #   init()
-  # except:
-  #   print_with_datetime("-cancel")
+  try:
+    init()
+  except:
+    print_with_datetime("-cancel")
