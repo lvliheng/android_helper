@@ -127,12 +127,12 @@ def inputNewCount():
       duration = random.randint(5, 8)
       # duration = random.randint(5, 10)
       time.sleep(duration)
-      pyautogui.click(1200, 300)
+      clickInput()
       pyautogui.hotkey("ctrl", "r")
       time.sleep(2)
 
       #focus
-      pyautogui.click(1200, 300)
+      clickInput()
       time.sleep(.2)
       pyautogui.hotkey("command", "a")
       time.sleep(.2)
@@ -154,7 +154,7 @@ def inputNewCount():
           add = random.randint(800, 1200)
           # add = random.randint(500, 1000)
           current += add
-          pyautogui.click(1200, 300)
+          clickInput()
           pyautogui.hotkey("command", "a")
           time.sleep(.2)
           pyautogui.write(str(current))

@@ -71,7 +71,7 @@ def testscreen():
 
 
 def testPixel():
-  pixel = pyautogui.pixel(996, 835)
+  pixel = pyautogui.pixel(320, 220)
   print(pixel)
   print(pixel[0], pixel[1], pixel[2])
 
@@ -87,8 +87,8 @@ def testPosition():
 
 if __name__=="__main__":
   # testscreen()
-  testPosition()
-  # testPixel()
+  # testPosition()
+  testPixel()
   # autoClick()
   # testDrag()
   # testClick()
