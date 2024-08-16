@@ -93,7 +93,7 @@ def start():
 
   clipboard.copy("")
   refresh()
-  time.sleep(1)
+  time.sleep(3)
   check_stream_state()
   # shutdown_player()
   
@@ -227,15 +227,15 @@ def start_record():
   click_start()
 
   time.sleep(1)
-  setLiveConfig()
+  set_live_config()
   
   time.sleep(1)
-  initConfig()
+  init_config()
   
-  time.sleep(1)
-  initCount()
+  time.sleep(10)
+  init_count()
 
-  time.sleep(20)
+  time.sleep(10)
   global try_times
   if not is_stream_end():
     try_times = 0
@@ -290,9 +290,9 @@ def check_file():
   else:
     click_window_left_top()
     
-    if isListOpen():
+    if is_list_open():
       time.sleep(.1)
-      updateCount()
+      update_count()
 
 def is_record_file_exists(type):
   global directory
@@ -300,25 +300,25 @@ def is_record_file_exists(type):
   record_file = Path("{}\{}-{}.mp4".format(directory, today_millis, type))
   return record_file.is_file() and os.path.getsize(record_file) > 0
 
-def setLiveConfig():
+def set_live_config():
   content = clipboard.paste()
   f = open("live_config", "w")
   f.write(content)
   f.close()
 
-def initConfig():
+def init_config():
   try:
     file_name = "live_config"
     f = open(file_name, "r")
     config = f.read()
     global chat_room_id
-    chat_room_id = parseJson(config, "id")
+    chat_room_id = parse_json(config, "id")
     global stream_url
-    stream_url = parseJson(config, "text")
+    stream_url = parse_json(config, "text")
   except:
     print("init config error:", config)
 
-def parseJson(config, key):
+def parse_json(config, key):
   try:
     value = json.loads(config)
     return value[key]
@@ -367,159 +367,188 @@ def shutdown_player():
   shutdown_player_command = "mm api -v 0 shutdown_player"
   os.popen(shutdown_player_command)
 
-def initCount():
-  global idList
+def init_count():
   global last_count
   last_count = 0
   global last_time
   last_time = round(time.time())
-  global maxCount
-  randomCount = random.randint(-10 * 1000, 10 * 1000)
-  maxCount = 170 * 1000 + randomCount
+  global max_count
+  random_count = random.randint(-10 * 1000, 10 * 1000)
+  max_count = 170 * 1000 + random_count
 
-  if not isListOpen():
-    openList()
+  if not is_list_open():
+    open_list()
 
-  global chat_room_id
-  checkId(chat_room_id)
+  if is_list_open():
+    global try_times
+    try_times = 0
+    global chat_room_id
+    check_id(chat_room_id)
 
-def checkId(id):
-  clickEnter()
+def check_id(id):
+  global try_times
+  if try_times > 3:
+    print_with_datetime("check id error")
+    
+  click_enter()
 
   search(id)
   time.sleep(3)
 
-  if not exists():
-    print("{} not exists".format(id))
+  if is_chat_room_exists():
+    pyautogui.click(996, 835)
     
-def clickEnter():
+    time.sleep(.1)
+    if not is_chat_room_valid():
+      try_times += 1
+      check_id(id)
+  else:
+    try_times += 1
+    check_id(id)
+    
+def click_enter():
   pyautogui.moveTo(1024, 728)
   time.sleep(.1)
   pyautogui.click(1024, 728)
 
 def search(id):
-  selectAll()
+  select_all()
   time.sleep(.1)
   header = 'live:users:count:'
   pyautogui.write("{}{}".format(header, id))
   time.sleep(.1)
   pyautogui.press('enter')  
 
-def exists():
+def is_chat_room_exists():
   pyautogui.moveTo(996, 835)
   time.sleep(.1)
   pixel = pyautogui.pixel(996, 835)
-  if pixel == (231, 231, 231):
-    pyautogui.click(996, 835)
-    return getSelectedCount() > 0
-  else:
-    print("no data")
-    return False
+  return pixel == (231, 231, 231)
 
-def getSelectedCount():
-  clickInput()
+def is_chat_room_valid():
+  return get_selected_count() > 0
+
+def get_selected_count():
+  click_input()
   time.sleep(.1)
-  refreshCount()
+  refresh_count()
   time.sleep(2)
-  clickInput()
+  click_input()
     
-  selectAll()
+  select_all()
   time.sleep(.1)
   
-  if not isListOpen() or is_stream_end():
+  if not is_list_open() or is_stream_end():
     return
-  copySelected()
+  copy_selected()
   selected = clipboard.paste()     
-  return stringToInt(selected)
+  return string_to_int(selected)
 
-def stringToInt(value):
+def string_to_int(value):
   try:
     result = int(value)
     return result
   except:
     return 0
 
-def isListOpen():
+def is_list_open():
   time.sleep(.1)
   pixel = pyautogui.pixel(1122, 1039)
   return pixel == (245, 108, 108)
 
-def openList():
+def open_list():
   pyautogui.click(1048, 652)
   time.sleep(.1)
 
-def clickInput():
+def click_input():
   pyautogui.moveTo(1600, 820)
   time.sleep(.1)
   pyautogui.click(1600, 820)
 
-def refreshCount():
+def refresh_count():
   pyautogui.hotkey("ctrl", "r")
 
-def updateCount():
+def update_count():
   global last_count
   global last_time
   
   time.sleep(.1)
   
-  clickInput()
+  click_input()
   time.sleep(.1)
-  refreshCount()
+  refresh_count()
   time.sleep(2)
 
-  clickInput()
+  click_input()
   time.sleep(.1)
-  selectAll()
+  select_all()
   time.sleep(.1)
   
-  if not isListOpen() or is_stream_end():
+  if not is_list_open() or is_stream_end():
+    time.sleep(1)
     return
-  copySelected()
+  copy_selected()
 
   try:
       current = int(clipboard.paste())
   except:
       print("selected count error")
 
-  global maxCount
-  if current <= 0 or current > maxCount:
-      time.sleep(.1)
+  global max_count
+  if current <= 0 or current > max_count:
+      time.sleep(1)
   elif current - last_count > 3000:
+      print_with_datetime(current)
       last_count = current
-      if not isListOpen() or is_stream_end():
+      if not is_list_open() or is_stream_end():
+        time.sleep(1)
         return
       time.sleep(10)
   else:
       if current < 10 * 1000:
-        add = random.randint(800, 1200)
-      elif current > 120 * 1000:
+        add = random.randint(1200, 1600)
+      elif current > 120 * 1000 and current < 150 * 1000:
         duration = random.randint(2, 4)
         time.sleep(duration)
         add = random.randint(600, 1000)
+      elif current > 150 * 1000:
+        duration = random.randint(3, 5)
+        time.sleep(duration)
+        add = random.randint(400, 800)
       else:
         duration = random.randint(1, 3)
         time.sleep(duration)
         add = random.randint(800, 1200)
       current += add
-      clickInput()
+      
+      click_input()
       time.sleep(.1)
-      selectAll()
+      select_all()
       time.sleep(.1)
       pyautogui.write(str(current))
 
       time.sleep(.1)
-      if not isListOpen() or is_stream_end():
+      if not is_list_open() or is_stream_end():
         return
       save()
+      
       now = round(time.time())
-      print_with_datetime("(+{}) {}(+{})".format(now - last_time, current, add))
+      print_with_datetime("+{} +{} {}".format(get_string_full_length(now - last_time, 2), get_string_full_length(add, 4), current))
       last_time = now
       last_count = current 
 
-def selectAll():
+def get_string_full_length(value_int, max_length):
+  result = str(value_int)
+  current_lenght = len(result)
+  if current_lenght < max_length:
+    for x in range(max_length - current_lenght):
+      result += " "
+  return result
+
+def select_all():
   pyautogui.hotkey("ctrl", "a")
 
-def copySelected():
+def copy_selected():
   pyautogui.hotkey("ctrl", "c")
 
 def save():
@@ -531,5 +560,5 @@ def print_with_datetime(text):
 if __name__=="__main__":
   try:
     init()
-  except:
-    print_with_datetime("-cancel")
+  except Exception as e:
+    print_with_datetime("-cancel", e)

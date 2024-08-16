@@ -31,6 +31,28 @@ def test():
   result2 = parseJson(fileContent, "a")
   print("result2", result2)
   
+def test2():
+  # command = "adb shell \"dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'\""
+  command = "adb shell \"dumpsys activity activities | grep -E 'mCurrentFocus|mFocusedApp'\""
+  print(command)
+  os.system(command)
+
+def test3():
+  
+  while True:
+    random_count = random.randint(9950, 10050)
+    duration_string = str(random_count)
+    print("duration_string", duration_string)
+    duration_lenght = len(duration_string)
+    print("duration_lenght before:", duration_lenght)
+    if duration_lenght < 5:
+      for x in range(5 - duration_lenght):
+        duration_string += " "
+    duration_lenght_after = len(duration_string)
+    print("durationlenght after:", duration_lenght_after)
+    if duration_lenght >= 5:
+      break
+
 def fileWrite(content):
   # f = open("config", "a")
   f = open("live_config", "w")
@@ -46,4 +68,6 @@ def parseJson(jsonString, key):
   return value[key]
 
 if __name__=="__main__":
-  test()
+  # test()
+  # test2()
+  test3()
