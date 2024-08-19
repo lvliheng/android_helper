@@ -120,9 +120,10 @@ def check_button():
   while True:
     time.sleep(2)
 
-    yellow_pixel = pyautogui.pixel(910, 915)
+    yellow_pixel = pyautogui.pixel(705, 934)
     yellow_exist = yellow_pixel == (222, 197, 69)
-    white_pixel = pyautogui.pixel(458, 964)
+    time.sleep(.1)
+    white_pixel = pyautogui.pixel(232, 986)
     white_exist = white_pixel == (255, 255, 255)
     if yellow_exist and white_exist:
       click_button()
@@ -134,13 +135,16 @@ def check_button():
   return is_succeed
 
 def click_button():
-  pyautogui.click(910, 850)
+  time.sleep(.1)
+  pyautogui.click(705, 862)
 
 def drag_next():
   pyautogui.moveTo(485, 900)
+  time.sleep(.1)
   pyautogui.dragTo(485, 200, 1, button = "left")
 
 def click_window_left_top():
+  time.sleep(.1)
   pyautogui.click(600, 20) 
 
 def print_with_datetime(text):

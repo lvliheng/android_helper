@@ -65,13 +65,13 @@ def testHotKey():
 def testscreen():
   print("testscreen")
   # screenshot = pyautogui.screenshot('screen-shot.png')
-  screenshot = pyautogui.screenshot('screen-shot.png', region=(960, 740, 270, 280))
+  screenshot = pyautogui.screenshot('screen-shot.png', region=(1024, 728, 270, 280))
   # screenshot = pyautogui.screenshot('screen-shot.png', region=(380, 400, 100, 600))
   screenshot.show()
 
 
 def testPixel():
-  pixel = pyautogui.pixel(320, 220)
+  pixel = pyautogui.pixel(232, 986)
   print(pixel)
   print(pixel[0], pixel[1], pixel[2])
 
@@ -86,9 +86,9 @@ def testPosition():
       print('\n')
 
 if __name__=="__main__":
-  # testscreen()
+  testscreen()
   # testPosition()
-  testPixel()
+  # testPixel()
   # autoClick()
   # testDrag()
   # testClick()

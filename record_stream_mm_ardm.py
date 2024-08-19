@@ -32,14 +32,14 @@ def init():
 
 def start_job(start_hour, start_minute):
   global stream_refresh_hour
-  global current
-  current = datetime.now()
-  start_date_time = datetime(current.year, current.month, current.day, start_hour, start_minute)
+  global current_time
+  current_time = datetime.now()
+  start_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour, start_minute)
   global end_date_time
-  end_date_time = datetime(current.year, current.month, current.day, start_hour + stream_refresh_hour, start_minute)
+  end_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour + stream_refresh_hour, start_minute)
   start_task_time = f"{start_hour:02d}:{start_minute:02d}"
 
-  if current > start_date_time and current < end_date_time:
+  if current_time > start_date_time and current_time < end_date_time:
     start()
   else:
     print("-----task will start at {}-----".format(start_task_time))
@@ -53,16 +53,16 @@ def start_job(start_hour, start_minute):
 def start():
   global stream_dead_line
   global stream_refresh_hour
-  global current
+  global current_time
   global today
   global today_millis
   global try_times
   try_times = 0
-  current = datetime.now()
-  stream_dead_line = current + timedelta(hours = stream_refresh_hour)
+  current_time = datetime.now()
+  stream_dead_line = current_time + timedelta(hours = stream_refresh_hour)
 
-  today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
-  today_millis = "{}-{}".format(today, current.strftime("%f"))
+  today = "{}-{}-{}".format(current_time.strftime("%Y"), current_time.strftime("%m"), current_time.strftime("%d"))
+  today_millis = "{}-{}".format(today, current_time.strftime("%f"))
 
   global root
   root = "D:\_temp\stream\\"
@@ -79,6 +79,22 @@ def start():
   stream_url = ""
 
   print(f"------------{today}------------")
+  check_player()
+
+  clipboard.copy("")
+  set_live_config()
+  refresh()
+  time.sleep(3)
+  check_stream_state()
+  
+  time.sleep(10)
+  close_app()
+  # shutdown_player()
+  time.sleep(10)
+  convert_video()
+  print(f"------------{today}------------")
+
+def check_player():
   if is_app_running():
     time.sleep(3)
     pyautogui.hotkey("ctrl", "win", "left")
@@ -87,29 +103,62 @@ def start():
     time.sleep(1)
     click_window_left_top()
     time.sleep(1)
-  # else:
-  #   launch_player()
-  #   time.sleep(120)
+    
+    if not is_stream_empty() and not is_stream_start() and not is_stream_end():
+      check_page()
+  else:
+    launch_app()
+    time.sleep(10)
+    check_page()
 
-  clipboard.copy("")
-  refresh()
-  time.sleep(3)
-  check_stream_state()
-  # shutdown_player()
+def check_page():
+  global try_times
+  try_times = 0
   
-  time.sleep(20)
-  convert_video()
-  print(f"------------{today}------------")
+  while True:
+    yellow_pixel = pyautogui.pixel(705, 934)
+    yellow_exist = yellow_pixel == (222, 197, 69)
+    time.sleep(.1)
+    white_pixel = pyautogui.pixel(232, 986)
+    white_exist = white_pixel == (255, 255, 255)
+    if yellow_exist and white_exist:
+      open_live_list()
+      break
+    else:
+      try_times += 1
+      if try_times > 3:
+        close_app()
+        time.sleep(10)
+        launch_app()
+        time.sleep(10)
+        check_page()
+        break
+      else:
+        drag_next()
+
+def open_live_list():
+  time.sleep(.1)
+  pyautogui.click(705, 862)
+
+def drag_next():
+  pyautogui.moveTo(485, 900)
+  time.sleep(.1)
+  pyautogui.dragTo(485, 200, 1, button = "left")
+
+def launch_app():
+  global app_package
+  launch_app_command = "mm api -v 0 launch_app {}".format(app_package)
+  os.popen(launch_app_command)
+
+def close_app():
+  global app_package
+  close_app_command = "mm api -v 0 close_app {}".format(app_package)
+  os.popen(close_app_command)
+    
 
 def check_stream_state():
   while True:
-    if not is_app_running():
-      if is_after_stream_dead_line():
-        break
-      else:
-        time.sleep(10)
-        continue
-    elif is_stream_start():
+    if is_stream_start():
       start_record()
       break
     elif is_stream_end():
@@ -214,14 +263,14 @@ def click_close_record_list():
 def start_record():
   print_with_datetime("--start")
 
-  global current
+  global current_time
   global today
   global today_millis
   global stream_dead_line
   global stream_duration_minute
 
-  current = datetime.now()
-  today_millis = "{}-{}".format(today, current.strftime("%f"))
+  current_time = datetime.now()
+  today_millis = "{}-{}".format(today, current_time.strftime("%f"))
   stream_dead_line = datetime.now() + timedelta(minutes = stream_duration_minute)
   
   click_start()
@@ -311,6 +360,8 @@ def init_config():
     file_name = "live_config"
     f = open(file_name, "r")
     config = f.read()
+    if config == "":
+      return
     global chat_room_id
     chat_room_id = parse_json(config, "id")
     global stream_url
@@ -349,7 +400,7 @@ def launch_player():
   pyautogui.hotkey("ctrl", "c")
 
   global app_package
-  convert_video_command = "launch_player {}".format(app_package)
+  convert_video_command = "launch_player"
   pyautogui.write(convert_video_command)
   time.sleep(.1)
   pyautogui.press("enter")
@@ -379,6 +430,7 @@ def init_count():
   if not is_list_open():
     open_list()
 
+  time.sleep(.4)
   if is_list_open():
     global try_times
     try_times = 0
@@ -388,7 +440,7 @@ def init_count():
 def check_id(id):
   global try_times
   if try_times > 3:
-    print_with_datetime("check id error")
+    return
     
   click_enter()
 
@@ -490,28 +542,28 @@ def update_count():
   copy_selected()
 
   try:
-      current = int(clipboard.paste())
+    current_count = int(clipboard.paste())
   except:
-      print("selected count error")
+    current_count = 0
 
   global max_count
-  if current <= 0 or current > max_count:
+  if current_count <= 0 or current_count > max_count:
       time.sleep(1)
-  elif current - last_count > 3000:
-      print_with_datetime(current)
-      last_count = current
+  elif current_count - last_count > 3000:
+      print_with_datetime(current_count)
+      last_count = current_count
       if not is_list_open() or is_stream_end():
         time.sleep(1)
         return
       time.sleep(10)
   else:
-      if current < 10 * 1000:
+      if current_count < 10 * 1000:
         add = random.randint(1200, 1600)
-      elif current > 120 * 1000 and current < 150 * 1000:
+      elif current_count > 120 * 1000 and current_count < 150 * 1000:
         duration = random.randint(2, 4)
         time.sleep(duration)
         add = random.randint(600, 1000)
-      elif current > 150 * 1000:
+      elif current_count > 150 * 1000:
         duration = random.randint(3, 5)
         time.sleep(duration)
         add = random.randint(400, 800)
@@ -519,13 +571,13 @@ def update_count():
         duration = random.randint(1, 3)
         time.sleep(duration)
         add = random.randint(800, 1200)
-      current += add
+      current_count += add
       
       click_input()
       time.sleep(.1)
       select_all()
       time.sleep(.1)
-      pyautogui.write(str(current))
+      pyautogui.write(str(current_count))
 
       time.sleep(.1)
       if not is_list_open() or is_stream_end():
@@ -533,9 +585,9 @@ def update_count():
       save()
       
       now = round(time.time())
-      print_with_datetime("+{} +{} {}".format(get_string_full_length(now - last_time, 2), get_string_full_length(add, 4), current))
+      print_with_datetime("+{} +{} {}".format(get_string_full_length(now - last_time, 2), get_string_full_length(add, 4), current_count))
       last_time = now
-      last_count = current 
+      last_count = current_count 
 
 def get_string_full_length(value_int, max_length):
   result = str(value_int)
