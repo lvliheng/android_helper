@@ -79,12 +79,11 @@ def start():
   stream_url = ""
 
   print(f"------------{today}------------")
-  check_player()
+  check_app()
 
   clipboard.copy("")
   set_live_config()
-  refresh()
-  time.sleep(3)
+  time.sleep(1)
   check_stream_state()
   
   time.sleep(10)
@@ -94,15 +93,11 @@ def start():
   convert_video()
   print(f"------------{today}------------")
 
-def check_player():
+def check_app():
   if is_app_running():
-    time.sleep(3)
-    pyautogui.hotkey("ctrl", "win", "left")
-    time.sleep(1)
-    pyautogui.hotkey("ctrl", "win", "left")
-    time.sleep(1)
+    move_to_first_desktop()
     click_window_left_top()
-    time.sleep(1)
+    time.sleep(.1)
     
     if not is_stream_empty() and not is_stream_start() and not is_stream_end():
       check_page()
@@ -110,6 +105,12 @@ def check_player():
     launch_app()
     time.sleep(10)
     check_page()
+
+def move_to_first_desktop():
+  hot_key_safely(["ctrl", "win", "left"])
+  time.sleep(.1)
+  hot_key_safely(["ctrl", "win", "left"])
+  time.sleep(.1)
 
 def check_page():
   global try_times
@@ -137,13 +138,10 @@ def check_page():
         drag_next()
 
 def open_live_list():
-  time.sleep(.1)
-  pyautogui.click(705, 862)
+  click_safely(705, 862)
 
 def drag_next():
-  pyautogui.moveTo(485, 900)
-  time.sleep(.1)
-  pyautogui.dragTo(485, 200, 1, button = "left")
+  drag_to_safely(485, 900, 485, 200)
 
 def launch_app():
   global app_package
@@ -154,7 +152,6 @@ def close_app():
   global app_package
   close_app_command = "mm api -v 0 close_app {}".format(app_package)
   os.popen(close_app_command)
-    
 
 def check_stream_state():
   while True:
@@ -237,28 +234,25 @@ def refresh():
     drag_refresh()
 
 def click_refresh():
-  pyautogui.click(430, 640)
+  click_safely(430, 640)
 
 def drag_refresh():
-  pyautogui.moveTo(485, 300)
-  pyautogui.dragTo(485, 800, 1, button = "left")
+  drag_to_safely(485, 300, 485, 800)
 
 def click_start():
-  pyautogui.moveTo(320, 220)
-  time.sleep(.1)
-  pyautogui.click(320, 220)
+  click_safely(320, 220)
 
 def click_window_left_top():
-  pyautogui.click(550, 20)
+  click_safely(550, 20)
 
 def click_window_right_top():
-  pyautogui.click(1000, 20)
+  click_safely(1000, 20)
 
 def click_stop():
-  pyautogui.click(330, 620)
+  click_safely(330, 620)
 
 def click_close_record_list():
-  pyautogui.click(860, 260)
+  click_safely(860, 260)
 
 def start_record():
   print_with_datetime("--start")
@@ -312,21 +306,23 @@ def check_stream_url():
 def start_record_screen():
   click_window_left_top()
 
-  time.sleep(1)
-  pyautogui.press("f10")
+  time.sleep(.1)
+  if press_safely("f10") == False:
+    time.sleep(1)
+    start_record_screen()
 
 def start_record_stream(stream_url):
   click_window_right_top()
-  pyautogui.hotkey("ctrl", "c")
+  stop_command()
 
   global directory
   global today_millis
   global file_name_tail_stream
 
   record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}\{}-{}.mp4".format(stream_url, directory, today_millis, file_name_tail_stream)
-  pyautogui.write(record_stream_command)
-  time.sleep(.1)
-  pyautogui.press("enter")
+  if write_safely(record_stream_command, "enter") == False:
+    time.sleep(1)
+    start_record_stream(stream_url)
 
 def check_file():
   global file_name_tail_stream
@@ -387,32 +383,40 @@ def stop_record_screen():
   click_stop()
   
   time.sleep(1)
-  pyautogui.hotkey("ctrl", "f10")
+  stop_record_mm()
   time.sleep(1)
   click_close_record_list()
 
 def stop_record_stream():
   click_window_right_top()
-  pyautogui.press("q")
+  if press_safely("q") == False:
+    time.sleep(1)
+    stop_record_stream()
 
 def launch_player():
   click_window_right_top()
-  pyautogui.hotkey("ctrl", "c")
+  stop_command()
 
   global app_package
-  convert_video_command = "launch_player"
-  pyautogui.write(convert_video_command)
-  time.sleep(.1)
-  pyautogui.press("enter")
+  launch_player_command = "launch_player"
+  if write_safely(launch_player_command, "enter") == False:
+    time.sleep(1)
+    launch_player()
 
 def convert_video():
   click_window_right_top()
-  pyautogui.hotkey("ctrl", "c")
+  stop_command()
 
   convert_video_command = "convert_video"
-  pyautogui.write(convert_video_command)
-  time.sleep(.1)
-  pyautogui.press("enter")
+  if write_safely(convert_video_command, "enter") == False:
+    time.sleep(1)
+    convert_video()
+
+def stop_command():
+  hot_key_safely(["ctrl", "c"])
+
+def stop_record_mm():
+  hot_key_safely(["ctrl", "f10"])
 
 def shutdown_player():
   shutdown_player_command = "mm api -v 0 shutdown_player"
@@ -428,7 +432,7 @@ def init_count():
   max_count = 170 * 1000 + random_count
 
   if not is_list_open():
-    open_list()
+    toogle_list()
 
   time.sleep(.4)
   if is_list_open():
@@ -448,7 +452,7 @@ def check_id(id):
   time.sleep(3)
 
   if is_chat_room_exists():
-    pyautogui.click(996, 835)
+    click_selected_item()
     
     time.sleep(.1)
     if not is_chat_room_valid():
@@ -457,25 +461,30 @@ def check_id(id):
   else:
     try_times += 1
     check_id(id)
-    
+
+def click_selected_item():
+  click_safely(996, 835)
+
 def click_enter():
-  pyautogui.moveTo(1024, 728)
-  time.sleep(.1)
-  pyautogui.click(1024, 728)
+  click_safely(1024, 728)
 
 def search(id):
   select_all()
   time.sleep(.1)
-  header = 'live:users:count:'
-  pyautogui.write("{}{}".format(header, id))
-  time.sleep(.1)
-  pyautogui.press('enter')  
+  search_key_word = "live:users:count:{}".format(id)
+  if write_safely(search_key_word, "enter") == False:
+    time.sleep(1)  
+    search(id)
 
 def is_chat_room_exists():
-  pyautogui.moveTo(996, 835)
+  move_to_selected_item()
+    
   time.sleep(.1)
   pixel = pyautogui.pixel(996, 835)
   return pixel == (231, 231, 231)
+
+def move_to_selected_item():
+  move_to_safely(996, 835)
 
 def is_chat_room_valid():
   return get_selected_count() > 0
@@ -508,17 +517,14 @@ def is_list_open():
   pixel = pyautogui.pixel(1122, 1039)
   return pixel == (245, 108, 108)
 
-def open_list():
-  pyautogui.click(1048, 652)
-  time.sleep(.1)
+def toogle_list():
+  click_safely(1048, 652)
 
 def click_input():
-  pyautogui.moveTo(1600, 820)
-  time.sleep(.1)
-  pyautogui.click(1600, 820)
+  click_safely(1600, 820)
 
 def refresh_count():
-  pyautogui.hotkey("ctrl", "r")
+  hot_key_safely(["ctrl", "r"])
 
 def update_count():
   global last_count
@@ -547,47 +553,50 @@ def update_count():
     current_count = 0
 
   global max_count
-  if current_count <= 0 or current_count > max_count:
-      time.sleep(1)
+  if current_count <= 0:
+    time.sleep(1)
+  elif current_count >= max_count:
+    toogle_list()
+    time.sleep(1)
   elif current_count - last_count > 3000:
-      print_with_datetime(current_count)
-      last_count = current_count
-      if not is_list_open() or is_stream_end():
-        time.sleep(1)
-        return
-      time.sleep(10)
+    print_with_datetime(current_count)
+    last_count = current_count
+    if not is_list_open() or is_stream_end():
+      time.sleep(1)
+      return
+    time.sleep(10)
   else:
-      if current_count < 10 * 1000:
-        add = random.randint(1200, 1600)
-      elif current_count > 120 * 1000 and current_count < 150 * 1000:
-        duration = random.randint(2, 4)
-        time.sleep(duration)
-        add = random.randint(600, 1000)
-      elif current_count > 150 * 1000:
-        duration = random.randint(3, 5)
-        time.sleep(duration)
-        add = random.randint(400, 800)
-      else:
-        duration = random.randint(1, 3)
-        time.sleep(duration)
-        add = random.randint(800, 1200)
-      current_count += add
+    if current_count < 10 * 1000:
+      add = random.randint(1200, 1600)
+    elif current_count > 120 * 1000 and current_count < 150 * 1000:
+      duration = random.randint(2, 4)
+      time.sleep(duration)
+      add = random.randint(600, 1000)
+    elif current_count > 150 * 1000:
+      duration = random.randint(3, 5)
+      time.sleep(duration)
+      add = random.randint(400, 800)
+    else:
+      duration = random.randint(1, 3)
+      time.sleep(duration)
+      add = random.randint(800, 1200)
+    current_count += add
       
-      click_input()
-      time.sleep(.1)
-      select_all()
-      time.sleep(.1)
-      pyautogui.write(str(current_count))
+    click_input()
+    time.sleep(.1)
+    select_all()
+    time.sleep(.1)
+    pyautogui.write(str(current_count))
 
-      time.sleep(.1)
-      if not is_list_open() or is_stream_end():
-        return
-      save()
+    time.sleep(.1)
+    if not is_list_open() or is_stream_end():
+      return
+    save()
       
-      now = round(time.time())
-      print_with_datetime("+{} +{} {}".format(get_string_full_length(now - last_time, 2), get_string_full_length(add, 4), current_count))
-      last_time = now
-      last_count = current_count 
+    now = round(time.time())
+    print_with_datetime("+{} +{} {}".format(get_string_full_length(now - last_time, 2), get_string_full_length(add, 4), current_count))
+    last_time = now
+    last_count = current_count 
 
 def get_string_full_length(value_int, max_length):
   result = str(value_int)
@@ -598,19 +607,68 @@ def get_string_full_length(value_int, max_length):
   return result
 
 def select_all():
-  pyautogui.hotkey("ctrl", "a")
+  hot_key_safely(["ctrl", "a"])
 
 def copy_selected():
-  pyautogui.hotkey("ctrl", "c")
+  hot_key_safely(["ctrl", "c"])
 
 def save():
-  pyautogui.hotkey("ctrl", "s")
+  hot_key_safely(["ctrl", "s"])
 
 def print_with_datetime(text):
   print(datetime.now(), text)
+
+def move_to_safely(x, y):
+  try:
+    pyautogui.moveTo(x, y)
+    time.sleep(.1)
+  except:
+    time.sleep(1)
+    move_to_safely(x, y)
+
+def click_safely(x, y):
+  try:
+    pyautogui.moveTo(x, y)
+    time.sleep(.1)
+    pyautogui.click(x, y)
+  except:
+    time.sleep(1)
+    click_safely(x, y)
+
+def drag_to_safely(from_x, from_y, to_x, to_y):
+  try:
+    pyautogui.moveTo(from_x, from_y)
+    time.sleep(.1)
+    pyautogui.dragTo(to_x, to_y, 1, button = "left")
+  except:
+    time.sleep(1)
+    drag_to_safely(from_x, from_y, to_x, to_y)
+
+def hot_key_safely(args):
+  try:
+    pyautogui.hotkey(args)
+  except:
+    time.sleep(1)
+    hot_key_safely(args)
+
+def press_safely(key):
+  try:
+    pyautogui.press(key)
+    return True
+  except:
+    return False
+
+def write_safely(content, key):
+  try:
+    pyautogui.write(content)
+    time.sleep(.1)
+    pyautogui.press(key)
+    return True
+  except:
+    return False
 
 if __name__=="__main__":
   try:
     init()
   except Exception as e:
-    print_with_datetime("-cancel", e)
+    print_with_datetime("-cancel\n", e)

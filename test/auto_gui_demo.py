@@ -1,5 +1,6 @@
 import pyautogui
 import time
+import random
 
 def testLocateOnScreen():
   print('testLocateOnScreen')
@@ -51,8 +52,18 @@ def autoClick():
   buttonClick('images/yellow.jpg', (685, 885, 60, 60))
 
 def testDrag():
-  pyautogui.moveTo(485, 900)
-  pyautogui.dragTo(485, 200, 1, button = "left")
+  while True:
+    time.sleep(2)
+    try:
+      pyautogui.moveTo(485, 900)
+      time.sleep(.1)
+      
+    except:
+      time.sleep(1)
+      testDrag()
+    
+    time.sleep(2)
+    pyautogui.dragTo(485, 200, 1, button = "left")
 
 def testClick():
   pyautogui.click(590, 420)
@@ -71,9 +82,15 @@ def testscreen():
 
 
 def testPixel():
-  pixel = pyautogui.pixel(232, 986)
-  print(pixel)
-  print(pixel[0], pixel[1], pixel[2])
+  while True:
+    time.sleep(2)
+    
+    try:
+      pixel = pyautogui.pixel(232, 986)
+      print(pixel)
+      print(pixel[0], pixel[1], pixel[2])
+    except Exception as e:
+      print("===test pixel: error:===\n", e)
 
 def testPosition():
   try:
@@ -85,10 +102,48 @@ def testPosition():
   except KeyboardInterrupt:
       print('\n')
 
+def test_move_to():
+  times = 0
+  while True:
+    times += 1
+    if times > 30:
+      break
+    
+    time.sleep(2)
+    try:
+      pyautogui.moveTo(1000, 1000)
+    except Exception as e:
+      print("+++test move to moveTo error:+++\n", e)
+    
+    time.sleep(.1)
+      
+    try:
+      pyautogui.click(1000, 1000)
+    except Exception as e:
+      print("---test move to click error:---\n", e)
+
+def test_hot_key():
+  while True:
+    time.sleep(2)
+    # pyautogui.hotkey("ctrl", "win", "left")
+    # pyautogui.hotkey(["ctrl", "win", "left"])
+    pyautogui.press("1")
+
+def test_write():
+  while True:
+    time.sleep(2)
+    try:
+      pyautogui.write("{} ".format(str(random.randint(0, 100))))
+    except Exception as e:
+      print("test write error: " + e)
+
 if __name__=="__main__":
-  testscreen()
+  # testscreen()
   # testPosition()
   # testPixel()
   # autoClick()
   # testDrag()
   # testClick()
+  # test_move_to()
+  # test_hot_key()
+  test_write()
