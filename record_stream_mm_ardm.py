@@ -10,15 +10,21 @@ import random
 import json
 
 def init():
-  global app_package
   parser = argparse.ArgumentParser()
   parser.add_argument("-p", "--package", help = "package name")
+  parser.add_argument("-k", "--keyword", help = "keyword header")
 
   args = parser.parse_args()
+  global app_package
   if args.package != None:
     app_package = args.package
   else:
     app_package = ""
+  global keyword_header
+  if args.keyword != None:
+    keyword_header = args.keyword
+  else:
+    keyword_header = ""
 
   global stream_refresh_hour
   stream_refresh_hour = 1
@@ -59,7 +65,7 @@ def start():
   global try_times
   try_times = 0
   current_time = datetime.now()
-  stream_dead_line = current_time + timedelta(hours = stream_refresh_hour)
+  stream_dead_line = current_time + timedelta(hours = stream_refresh_hour)  
 
   today = "{}-{}-{}".format(current_time.strftime("%Y"), current_time.strftime("%m"), current_time.strftime("%d"))
   today_millis = "{}-{}".format(today, current_time.strftime("%f"))
@@ -69,9 +75,6 @@ def start():
   global directory
   directory = "{}{}".format(root, today)
   Path(directory).mkdir(parents = True, exist_ok = True)
-
-  global file_name_tail_stream
-  file_name_tail_stream = "stream"
   
   global chat_room_id
   chat_room_id = ""
@@ -117,10 +120,12 @@ def check_page():
   try_times = 0
   
   while True:
-    yellow_pixel = pyautogui.pixel(705, 934)
-    yellow_exist = yellow_pixel == (222, 197, 69)
     time.sleep(.1)
+    yellow_pixel = pyautogui.pixel(705, 934)
+    time.sleep(.1)
+    yellow_exist = yellow_pixel == (222, 197, 69)
     white_pixel = pyautogui.pixel(232, 986)
+    time.sleep(.1)
     white_exist = white_pixel == (255, 255, 255)
     if yellow_exist and white_exist:
       open_live_list()
@@ -171,7 +176,7 @@ def check_stream_state():
       if is_after_stream_dead_line():
         break
       else:
-        print_with_datetime("refresh")
+        time.sleep(3)
         refresh()
         time.sleep(3)
         if is_stream_start():
@@ -192,16 +197,19 @@ def is_stream_empty():
   first_item_cover_pixel = pyautogui.pixel(320, 220)
   time.sleep(.1)
   refresh_button_pixel = pyautogui.pixel(430, 640)
+  time.sleep(.1)
   return (refresh_button_pixel == (183, 89, 195) or first_item_cover_pixel == (238, 238, 238))
 
 def is_stream_start():
   time.sleep(.1)
   pixel = pyautogui.pixel(320, 220)
+  time.sleep(.1)
   return pixel == (7, 193, 96)
 
 def is_stream_end():
   time.sleep(.1)
   pixel = pyautogui.pixel(330, 620)
+  time.sleep(.1)
   return pixel == (183, 89, 195)
 
 def is_app_running():
@@ -222,10 +230,12 @@ def is_app_running():
     return False
 
 def refresh():
+  print_with_datetime("refresh")
   time.sleep(.1)
   first_item_cover_pixel = pyautogui.pixel(320, 220)
   time.sleep(.1)
   refresh_button_pixel = pyautogui.pixel(430, 640)
+  time.sleep(.1)
   if refresh_button_pixel == (183, 89, 195):
     click_refresh()
   elif first_item_cover_pixel == (238, 238, 238):
@@ -317,16 +327,14 @@ def start_record_stream(stream_url):
 
   global directory
   global today_millis
-  global file_name_tail_stream
 
-  record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}\{}-{}.mp4".format(stream_url, directory, today_millis, file_name_tail_stream)
+  record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}\{}-stream.mp4".format(stream_url, directory, today_millis)
   if write_safely(record_stream_command, "enter") == False:
     time.sleep(1)
     start_record_stream(stream_url)
 
 def check_file():
-  global file_name_tail_stream
-  if not is_record_file_exists(file_name_tail_stream):
+  if not is_record_file_exists():
     global try_times
     try_times += 1
     if try_times <= 5:
@@ -336,26 +344,25 @@ def check_file():
     click_window_left_top()
     
     if is_list_open():
-      time.sleep(.1)
       update_count()
 
-def is_record_file_exists(type):
+def is_record_file_exists():
   global directory
   global today_millis
-  record_file = Path("{}\{}-{}.mp4".format(directory, today_millis, type))
+  record_file = Path("{}\{}-stream.mp4".format(directory, today_millis))
   return record_file.is_file() and os.path.getsize(record_file) > 0
 
 def set_live_config():
   content = clipboard.paste()
-  f = open("live_config", "w")
-  f.write(content)
-  f.close()
+  file = open("live_config", "w")
+  file.write(content)
+  file.close()
 
 def init_config():
   try:
     file_name = "live_config"
-    f = open(file_name, "r")
-    config = f.read()
+    file = open(file_name, "r")
+    config = file.read()
     if config == "":
       return
     global chat_room_id
@@ -471,7 +478,8 @@ def click_enter():
 def search(id):
   select_all()
   time.sleep(.1)
-  search_key_word = "live:users:count:{}".format(id)
+  global keyword_header
+  search_key_word = "{}{}".format(keyword_header, id)
   if write_safely(search_key_word, "enter") == False:
     time.sleep(1)  
     search(id)
@@ -481,6 +489,7 @@ def is_chat_room_exists():
     
   time.sleep(.1)
   pixel = pyautogui.pixel(996, 835)
+  time.sleep(.1)
   return pixel == (231, 231, 231)
 
 def move_to_selected_item():
@@ -515,6 +524,7 @@ def string_to_int(value):
 def is_list_open():
   time.sleep(.1)
   pixel = pyautogui.pixel(1122, 1039)
+  time.sleep(.1)
   return pixel == (245, 108, 108)
 
 def toogle_list():
@@ -527,9 +537,6 @@ def refresh_count():
   hot_key_safely(["ctrl", "r"])
 
 def update_count():
-  global last_count
-  global last_time
-  
   time.sleep(.1)
   
   click_input()
@@ -553,6 +560,9 @@ def update_count():
     current_count = 0
 
   global max_count
+  global last_count
+  global last_time
+  
   if current_count <= 0:
     time.sleep(1)
   elif current_count >= max_count:

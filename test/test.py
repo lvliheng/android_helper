@@ -38,7 +38,6 @@ def test2():
   os.system(command)
 
 def test3():
-  
   while True:
     random_count = random.randint(9950, 10050)
     duration_string = str(random_count)
@@ -52,6 +51,16 @@ def test3():
     print("durationlenght after:", duration_lenght_after)
     if duration_lenght >= 5:
       break
+
+def test4():
+  times = 0
+  while True:
+    times += 1
+    if times > 10:
+      break
+    
+    time.sleep(1)
+    print(str(datetime.now), str(times))
 
 def fileWrite(content):
   # f = open("config", "a")
@@ -70,4 +79,5 @@ def parseJson(jsonString, key):
 if __name__=="__main__":
   # test()
   # test2()
-  test3()
+  # test3()
+  test4()
