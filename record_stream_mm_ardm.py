@@ -85,7 +85,7 @@ def start():
   check_app()
 
   clipboard.copy("")
-  set_live_config()
+  set_config()
   time.sleep(1)
   check_stream_state()
   
@@ -280,12 +280,12 @@ def start_record():
   click_start()
 
   time.sleep(1)
-  set_live_config()
+  set_config()
   
-  time.sleep(1)
+  time.sleep(4)
   init_config()
   
-  time.sleep(10)
+  time.sleep(6)
   init_count()
 
   time.sleep(10)
@@ -352,7 +352,7 @@ def is_record_file_exists():
   record_file = Path("{}\{}-stream.mp4".format(directory, today_millis))
   return record_file.is_file() and os.path.getsize(record_file) > 0
 
-def set_live_config():
+def set_config():
   content = clipboard.paste()
   file = open("live_config", "w")
   file.write(content)
@@ -364,6 +364,7 @@ def init_config():
     file = open(file_name, "r")
     config = file.read()
     if config == "":
+      print("config file empty")
       return
     global chat_room_id
     chat_room_id = parse_json(config, "id")
@@ -445,7 +446,20 @@ def init_count():
   if is_list_open():
     global try_times
     try_times = 0
+    
     global chat_room_id
+    if string_to_int(chat_room_id) == 0:
+      if try_times > 3:
+        print_with_datetime("chat room id error:", chat_room_id)
+        return
+      
+      try_times += 1
+      time.sleep(1)
+      init_config()
+      time.sleep(3)
+      init_count()
+      return
+  
     check_id(chat_room_id)
 
 def check_id(id):
@@ -496,7 +510,10 @@ def move_to_selected_item():
   move_to_safely(996, 835)
 
 def is_chat_room_valid():
-  return get_selected_count() > 0
+  time.sleep(.1)
+  pixel = pyautogui.pixel(1805, 660)
+  time.sleep(.1)
+  return pixel == (103, 194, 58) and get_selected_count() > 0
 
 def get_selected_count():
   click_input()
@@ -509,7 +526,7 @@ def get_selected_count():
   time.sleep(.1)
   
   if not is_list_open() or is_stream_end():
-    return
+    return 0
   copy_selected()
   selected = clipboard.paste()     
   return string_to_int(selected)
@@ -551,6 +568,8 @@ def update_count():
   
   if not is_list_open() or is_stream_end():
     time.sleep(1)
+    toogle_list()
+    time.sleep(1)
     return
   copy_selected()
 
@@ -572,6 +591,8 @@ def update_count():
     print_with_datetime(current_count)
     last_count = current_count
     if not is_list_open() or is_stream_end():
+      time.sleep(1)
+      toogle_list()
       time.sleep(1)
       return
     time.sleep(10)
@@ -600,6 +621,9 @@ def update_count():
 
     time.sleep(.1)
     if not is_list_open() or is_stream_end():
+      time.sleep(1)
+      toogle_list()
+      time.sleep(1)
       return
     save()
       

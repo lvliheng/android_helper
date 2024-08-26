@@ -86,7 +86,7 @@ def testPixel():
     time.sleep(2)
     
     try:
-      pixel = pyautogui.pixel(232, 986)
+      pixel = pyautogui.pixel(1805, 661)
       print(pixel)
       print(pixel[0], pixel[1], pixel[2])
     except Exception as e:
@@ -140,10 +140,10 @@ def test_write():
 if __name__=="__main__":
   # testscreen()
   # testPosition()
-  # testPixel()
+  testPixel()
   # autoClick()
   # testDrag()
   # testClick()
   # test_move_to()
   # test_hot_key()
-  test_write()
+  # test_write()
