@@ -120,11 +120,12 @@ def check_page():
   try_times = 0
   
   while True:
+    stop_play()
     time.sleep(.1)
-    yellow_pixel = pyautogui.pixel(705, 934)
+    yellow_pixel = get_pixel_safely(705, 934)
     time.sleep(.1)
     yellow_exist = yellow_pixel == (222, 197, 69)
-    white_pixel = pyautogui.pixel(232, 986)
+    white_pixel = get_pixel_safely(232, 986)
     time.sleep(.1)
     white_exist = white_pixel == (255, 255, 255)
     if yellow_exist and white_exist:
@@ -141,6 +142,9 @@ def check_page():
         break
       else:
         drag_next()
+
+def stop_play():
+  click_safely(478, 540)
 
 def open_live_list():
   click_safely(705, 862)
@@ -194,21 +198,21 @@ def is_after_stream_dead_line():
 
 def is_stream_empty():
   time.sleep(.1)
-  first_item_cover_pixel = pyautogui.pixel(320, 220)
+  first_item_cover_pixel = get_pixel_safely(320, 220)
   time.sleep(.1)
-  refresh_button_pixel = pyautogui.pixel(430, 640)
+  refresh_button_pixel = get_pixel_safely(430, 640)
   time.sleep(.1)
   return (refresh_button_pixel == (183, 89, 195) or first_item_cover_pixel == (238, 238, 238))
 
 def is_stream_start():
   time.sleep(.1)
-  pixel = pyautogui.pixel(320, 220)
+  pixel = get_pixel_safely(320, 220)
   time.sleep(.1)
   return pixel == (7, 193, 96)
 
 def is_stream_end():
   time.sleep(.1)
-  pixel = pyautogui.pixel(330, 620)
+  pixel = get_pixel_safely(330, 620)
   time.sleep(.1)
   return pixel == (183, 89, 195)
 
@@ -232,9 +236,9 @@ def is_app_running():
 def refresh():
   print_with_datetime("refresh")
   time.sleep(.1)
-  first_item_cover_pixel = pyautogui.pixel(320, 220)
+  first_item_cover_pixel = get_pixel_safely(320, 220)
   time.sleep(.1)
-  refresh_button_pixel = pyautogui.pixel(430, 640)
+  refresh_button_pixel = get_pixel_safely(430, 640)
   time.sleep(.1)
   if refresh_button_pixel == (183, 89, 195):
     click_refresh()
@@ -364,14 +368,14 @@ def init_config():
     file = open(file_name, "r")
     config = file.read()
     if config == "":
-      print("config file empty")
+      print_with_datetime("config file empty")
       return
     global chat_room_id
     chat_room_id = parse_json(config, "id")
     global stream_url
     stream_url = parse_json(config, "text")
   except:
-    print("init config error:", config)
+    print_with_datetime("init config error: {}".format(config))
 
 def parse_json(config, key):
   try:
@@ -450,7 +454,7 @@ def init_count():
     global chat_room_id
     if string_to_int(chat_room_id) == 0:
       if try_times > 3:
-        print_with_datetime("chat room id error:", chat_room_id)
+        print_with_datetime("chat room id error: {}".format(chat_room_id))
         return
       
       try_times += 1
@@ -502,7 +506,7 @@ def is_chat_room_exists():
   move_to_selected_item()
     
   time.sleep(.1)
-  pixel = pyautogui.pixel(996, 835)
+  pixel = get_pixel_safely(996, 835)
   time.sleep(.1)
   return pixel == (231, 231, 231)
 
@@ -511,7 +515,7 @@ def move_to_selected_item():
 
 def is_chat_room_valid():
   time.sleep(.1)
-  pixel = pyautogui.pixel(1805, 660)
+  pixel = get_pixel_safely(1805, 660)
   time.sleep(.1)
   return pixel == (103, 194, 58) and get_selected_count() > 0
 
@@ -540,7 +544,7 @@ def string_to_int(value):
 
 def is_list_open():
   time.sleep(.1)
-  pixel = pyautogui.pixel(1122, 1039)
+  pixel = get_pixel_safely(1122, 1039)
   time.sleep(.1)
   return pixel == (245, 108, 108)
 
@@ -617,7 +621,7 @@ def update_count():
     time.sleep(.1)
     select_all()
     time.sleep(.1)
-    pyautogui.write(str(current_count))
+    write_safely(str(current_count), "")
 
     time.sleep(.1)
     if not is_list_open() or is_stream_end():
@@ -696,13 +700,27 @@ def write_safely(content, key):
   try:
     pyautogui.write(content)
     time.sleep(.1)
-    pyautogui.press(key)
+    if not key == "":
+      pyautogui.press(key)
     return True
   except:
     return False
 
+def get_pixel_safely(x, y):
+  try:
+    pixel = pyautogui.pixel(x, y)
+    if type(pixel) == tuple:
+      return pixel
+    else:
+      time.sleep(1)
+      get_pixel_safely(x, y)
+  except Exception as e:
+    print_with_datetime("get pixel: error:\n{}".format(e))
+    time.sleep(1)
+    get_pixel_safely(x, y)
+    
 if __name__=="__main__":
   try:
     init()
   except Exception as e:
-    print_with_datetime("-cancel\n", e)
+    print_with_datetime("-cancel\n{}".format(e))

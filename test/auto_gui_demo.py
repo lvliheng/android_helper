@@ -86,11 +86,12 @@ def testPixel():
     time.sleep(2)
     
     try:
-      pixel = pyautogui.pixel(1805, 661)
-      print(pixel)
+      pixel = pyautogui.pixel(705, 934)
+      print(pixel, type(pixel))
       print(pixel[0], pixel[1], pixel[2])
     except Exception as e:
       print("===test pixel: error:===\n", e)
+      break
 
 def testPosition():
   try:
