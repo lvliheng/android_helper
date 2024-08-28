@@ -65,7 +65,7 @@ def start():
   global try_times
   try_times = 0
   current_time = datetime.now()
-  stream_dead_line = current_time + timedelta(hours = stream_refresh_hour)  
+  stream_dead_line = current_time + timedelta(hours = stream_refresh_hour)
 
   today = "{}-{}-{}".format(current_time.strftime("%Y"), current_time.strftime("%m"), current_time.strftime("%d"))
   today_millis = "{}-{}".format(today, current_time.strftime("%f"))
@@ -292,7 +292,7 @@ def start_record():
   time.sleep(6)
   init_count()
 
-  time.sleep(10)
+  time.sleep(8)
   global try_times
   if not is_stream_end():
     try_times = 0
@@ -440,21 +440,21 @@ def init_count():
   global last_time
   last_time = round(time.time())
   global max_count
-  random_count = random.randint(-10 * 1000, 10 * 1000)
-  max_count = 170 * 1000 + random_count
+  random_count = random.randint(-20 * 1000, 20 * 1000)
+  max_count = 160 * 1000 + random_count
 
   if not is_list_open():
     toogle_list()
+    time.sleep(2)
 
-  time.sleep(.4)
   if is_list_open():
     global try_times
     try_times = 0
     
     global chat_room_id
     if string_to_int(chat_room_id) == 0:
+      print_with_datetime("chat room id error: {}".format(chat_room_id))
       if try_times > 3:
-        print_with_datetime("chat room id error: {}".format(chat_room_id))
         return
       
       try_times += 1
@@ -462,13 +462,17 @@ def init_count():
       init_config()
       time.sleep(3)
       init_count()
-      return
-  
-    check_id(chat_room_id)
+    else:
+      check_id(chat_room_id)
+  else:
+    print_with_datetime("open list error")
+    time.sleep(3)
+    init_count()
 
 def check_id(id):
   global try_times
   if try_times > 3:
+    print_with_datetime("chat room error")
     return
     
   click_enter()

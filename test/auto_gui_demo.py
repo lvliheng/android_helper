@@ -86,7 +86,7 @@ def testPixel():
     time.sleep(2)
     
     try:
-      pixel = pyautogui.pixel(705, 934)
+      pixel = pyautogui.pixel(1805, 660)
       print(pixel, type(pixel))
       print(pixel[0], pixel[1], pixel[2])
     except Exception as e:

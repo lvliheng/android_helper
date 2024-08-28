@@ -19,6 +19,10 @@ import json
 def test():
   print("test")
   
+  empty = string_to_int("")
+  print("empty:", empty)
+  
+def test1():  
   jsonString = '{"a": "123"}'
   # print(jsonString, type(jsonString), len(jsonString))
   
@@ -31,6 +35,7 @@ def test():
   result2 = parseJson(fileContent, "a")
   print("result2", result2)
   
+
 def test2():
   # command = "adb shell \"dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'\""
   command = "adb shell \"dumpsys activity activities | grep -E 'mCurrentFocus|mFocusedApp'\""
@@ -62,6 +67,14 @@ def test4():
     time.sleep(1)
     print(str(datetime.now), str(times))
 
+def string_to_int(value):
+  try:
+    result = int(value)
+    return result
+  except:
+    return 0
+
+
 def fileWrite(content):
   # f = open("config", "a")
   f = open("live_config", "w")
@@ -77,7 +90,7 @@ def parseJson(jsonString, key):
   return value[key]
 
 if __name__=="__main__":
-  # test()
+  test()
   # test2()
   # test3()
-  test4()
+  # test4()
