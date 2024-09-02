@@ -130,6 +130,7 @@ def check_page():
     white_exist = white_pixel == (255, 255, 255)
     if yellow_exist and white_exist:
       open_live_list()
+      time.sleep(2)
       break
     else:
       try_times += 1
@@ -641,12 +642,7 @@ def update_count():
     last_count = current_count 
 
 def get_string_full_length(value_int, max_length):
-  result = str(value_int)
-  current_lenght = len(result)
-  if current_lenght < max_length:
-    for x in range(max_length - current_lenght):
-      result += " "
-  return result
+  return "{:<{}}".format(value_int, max_length)
 
 def select_all():
   hot_key_safely(["ctrl", "a"])

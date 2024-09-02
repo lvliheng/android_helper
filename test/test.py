@@ -19,8 +19,12 @@ import json
 def test():
   print("test")
   
-  empty = string_to_int("")
-  print("empty:", empty)
+  result = get_string_full_length(1, 3)
+  print(result, len(result))
+  result = get_string_full_length(22, 3)
+  print(result, len(result))
+  result = get_string_full_length(333, 3)
+  print(result, len(result))
   
 def test1():  
   jsonString = '{"a": "123"}'
@@ -66,6 +70,16 @@ def test4():
     
     time.sleep(1)
     print(str(datetime.now), str(times))
+
+def test_format(value, max):
+  # return format(value, "03")
+  
+  # return "% 3s" % value
+  # return "% 3d" % value
+  return "{:<{}}".format(value, max)
+
+def get_string_full_length(value_int, max_length):
+  return "{:<{}}".format(value_int, max_length)
 
 def string_to_int(value):
   try:
