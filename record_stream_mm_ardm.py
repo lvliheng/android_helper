@@ -441,8 +441,8 @@ def init_count():
   global last_time
   last_time = round(time.time())
   global max_count
-  random_count = random.randint(-20 * 1000, 20 * 1000)
-  max_count = 160 * 1000 + random_count
+  random_count = random.randint(-30 * 1000, 30 * 1000)
+  max_count = 180 * 1000 + random_count
 
   if not is_list_open():
     toogle_list()
@@ -616,6 +616,10 @@ def update_count():
       duration = random.randint(3, 5)
       time.sleep(duration)
       add = random.randint(400, 800)
+    elif current_count > 180 * 1000:
+      duration = random.randint(8, 10)
+      time.sleep(duration)
+      add = random.randint(200, 600)
     else:
       duration = random.randint(1, 3)
       time.sleep(duration)
