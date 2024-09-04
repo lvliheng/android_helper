@@ -19,12 +19,30 @@ import json
 def test():
   print("test")
   
-  result = get_string_full_length(1, 3)
-  print(result, len(result))
-  result = get_string_full_length(22, 3)
-  print(result, len(result))
-  result = get_string_full_length(333, 3)
-  print(result, len(result))
+
+def test_return():
+  while True:
+    time.sleep(2)
+    
+    print("loop start")
+    x = random.randint(0, 1)
+    if x % 2 == 0:
+      test_fun_a()
+      
+    print("loop end")
+    
+def test_fun_a():
+  print("fun a start")
+  x = random.randint(0, 1)
+  if x % 2 == 0:
+    print("fun a return")
+    return
+  print("fun a end")
+  
+
+def test_condition(a, b):
+  result = not a or b
+  print(a, b, "==>", result)
   
 def test1():  
   jsonString = '{"a": "123"}'

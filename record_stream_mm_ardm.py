@@ -89,7 +89,7 @@ def start():
   time.sleep(1)
   check_stream_state()
   
-  time.sleep(10)
+  time.sleep(30)
   close_app()
   # shutdown_player()
   time.sleep(10)
@@ -442,7 +442,7 @@ def init_count():
   last_time = round(time.time())
   global max_count
   random_count = random.randint(-30 * 1000, 30 * 1000)
-  max_count = 180 * 1000 + random_count
+  max_count = 220 * 1000 + random_count
 
   if not is_list_open():
     toogle_list()
@@ -575,10 +575,7 @@ def update_count():
   select_all()
   time.sleep(.1)
   
-  if not is_list_open() or is_stream_end():
-    time.sleep(1)
-    toogle_list()
-    time.sleep(1)
+  if is_list_closed_or_stream_end():
     return
   copy_selected()
 
@@ -599,10 +596,7 @@ def update_count():
   elif current_count - last_count > 3000:
     print_with_datetime(current_count)
     last_count = current_count
-    if not is_list_open() or is_stream_end():
-      time.sleep(1)
-      toogle_list()
-      time.sleep(1)
+    if is_list_closed_or_stream_end():
       return
     time.sleep(10)
   else:
@@ -612,7 +606,7 @@ def update_count():
       duration = random.randint(2, 4)
       time.sleep(duration)
       add = random.randint(600, 1000)
-    elif current_count > 150 * 1000:
+    elif current_count > 150 * 1000 and current_count < 180 * 1000:
       duration = random.randint(3, 5)
       time.sleep(duration)
       add = random.randint(400, 800)
@@ -633,10 +627,7 @@ def update_count():
     write_safely(str(current_count), "")
 
     time.sleep(.1)
-    if not is_list_open() or is_stream_end():
-      time.sleep(1)
-      toogle_list()
-      time.sleep(1)
+    if is_list_closed_or_stream_end():
       return
     save()
       
@@ -644,6 +635,20 @@ def update_count():
     print_with_datetime("+{} +{} {}".format(get_string_full_length(now - last_time, 2), get_string_full_length(add, 4), current_count))
     last_time = now
     last_count = current_count 
+
+def is_list_closed_or_stream_end():
+  if not is_list_open():
+    time.sleep(1)
+    toogle_list()
+    time.sleep(1)
+    return True
+  elif is_stream_end():
+    time.sleep(1)
+    stop_record()
+    time.sleep(1)
+    return True
+  else:
+    return False
 
 def get_string_full_length(value_int, max_length):
   return "{:<{}}".format(value_int, max_length)
