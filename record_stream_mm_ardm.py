@@ -174,7 +174,7 @@ def check_stream_state():
       if is_after_stream_dead_line():
         break
       else:
-        time.sleep(3)
+        time.sleep(13)
         refresh()
         time.sleep(7)
     elif is_stream_empty():
@@ -201,9 +201,11 @@ def is_stream_empty():
   time.sleep(.1)
   first_item_cover_pixel = get_pixel_safely(320, 220)
   time.sleep(.1)
+  white_pixel = get_pixel_safely(300, 620)
+  time.sleep(.1)
   refresh_button_pixel = get_pixel_safely(430, 640)
   time.sleep(.1)
-  return (refresh_button_pixel == (183, 89, 195) or first_item_cover_pixel == (238, 238, 238))
+  return (first_item_cover_pixel == (238, 238, 238) or (white_pixel != (255, 255, 255) and refresh_button_pixel == (183, 89, 195)))
 
 def is_stream_start():
   time.sleep(.1)
@@ -213,9 +215,11 @@ def is_stream_start():
 
 def is_stream_end():
   time.sleep(.1)
-  pixel = get_pixel_safely(330, 620)
+  white_pixel = get_pixel_safely(300, 620)
   time.sleep(.1)
-  return pixel == (183, 89, 195)
+  purple_pixel = get_pixel_safely(330, 620)
+  time.sleep(.1)
+  return white_pixel == (255, 255, 255) and purple_pixel == (183, 89, 195)
 
 def is_app_running():
   global app_package

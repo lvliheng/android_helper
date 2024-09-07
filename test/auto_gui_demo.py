@@ -86,12 +86,13 @@ def testPixel():
     time.sleep(2)
     
     try:
-      pixel = pyautogui.pixel(1805, 660)
+      pixel = pyautogui.pixel(320, 220)
       print(pixel, type(pixel))
       print(pixel[0], pixel[1], pixel[2])
+      break
     except Exception as e:
       print("===test pixel: error:===\n", e)
-      break
+      time.sleep(1)
 
 def testPosition():
   try:
@@ -103,7 +104,7 @@ def testPosition():
   except KeyboardInterrupt:
       print('\n')
 
-def test_move_to():
+def test_move_to(x, y):
   times = 0
   while True:
     times += 1
@@ -112,16 +113,17 @@ def test_move_to():
     
     time.sleep(2)
     try:
-      pyautogui.moveTo(1000, 1000)
+      pyautogui.moveTo(x, y)
+      break
     except Exception as e:
       print("+++test move to moveTo error:+++\n", e)
     
     time.sleep(.1)
       
-    try:
-      pyautogui.click(1000, 1000)
-    except Exception as e:
-      print("---test move to click error:---\n", e)
+    # try:
+    #   pyautogui.click(x, y)
+    # except Exception as e:
+    #   print("---test move to click error:---\n", e)
 
 def test_hot_key():
   while True:
@@ -145,6 +147,8 @@ if __name__=="__main__":
   # autoClick()
   # testDrag()
   # testClick()
-  # test_move_to()
+  # test_move_to(330, 620)
+  # time.sleep(3)
+  # test_move_to(430, 640)
   # test_hot_key()
   # test_write()
