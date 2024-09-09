@@ -15,10 +15,18 @@ import requests
 from PIL import Image
 import json
 
-
 def test():
   print("test")
-  
+
+def test_exception():
+  try:
+    count = 0
+    while True:
+      count += 1
+      print(count)
+      time.sleep(2)
+  except KeyboardInterrupt as e:
+    print("test: error:", e)
 
 def test_return():
   while True:
@@ -48,13 +56,13 @@ def test1():
   jsonString = '{"a": "123"}'
   # print(jsonString, type(jsonString), len(jsonString))
   
-  fileWrite(jsonString)
-  fileContent = fileRead()
+  file_write(jsonString)
+  fileContent = file_read()
   # print(fileContent, type(fileContent), len(fileContent))
   
-  # result = parseJson(jsonString, "a")
+  # result = parse_json(jsonString, "a")
   # print("result", result)
-  result2 = parseJson(fileContent, "a")
+  result2 = parse_json(fileContent, "a")
   print("result2", result2)
   
 
@@ -107,22 +115,37 @@ def string_to_int(value):
     return 0
 
 
-def fileWrite(content):
+def file_write(content):
   # f = open("config", "a")
   f = open("live_config", "w")
   f.write(content)
   f.close()
 
-def fileRead():
+def file_read():
   f = open("live_config", "r")
   return f.read()
 
-def parseJson(jsonString, key):
+def parse_json(jsonString, key):
   value = json.loads(jsonString)
   return value[key]
+
+def check_application():
+  command = "tasklist | findstr \"Another Redis Desktop Manager.exe\""
+  process_list = os.popen(command).readlines()
+  print(process_list)
+  if len(process_list) == 0:
+    pyautogui.hotkey("win", "r")
+    time.sleep(.1)
+    pyautogui.write("\"D:\_tools\AnotherRedis\Another Redis Desktop Manager\Another Redis Desktop Manager.exe\"")
+    time.sleep(.1)
+    pyautogui.press("enter")
+  else:
+    print("running")
 
 if __name__=="__main__":
   test()
   # test2()
   # test3()
   # test4()
+  # test_exception()
+  # check_application()
