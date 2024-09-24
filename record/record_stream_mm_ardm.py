@@ -78,8 +78,8 @@ def start():
   Path(directory).mkdir(parents = True, exist_ok = True)
   global last_file_size
   last_file_size = -1
-  global config_file
-  config_file = "{}{}".format(root, "live_config")
+  global live_info_file
+  live_info_file = "{}{}".format(root, "live_info")
   
   global chat_room_id
   chat_room_id = ""
@@ -98,7 +98,6 @@ def start():
   
   time.sleep(30)
   close_app()
-  # shutdown_player()
   time.sleep(10)
   convert_video()
   print(f"------------{today}------------")
@@ -183,11 +182,9 @@ def close_app():
 def check_stream_state():
   while True:
     if is_stream_start():
-      Utils.print_with_datetime("--start")
       start_record()
       break
     elif is_stream_end():
-      Utils.print_with_datetime("----end")
       stop_record()
 
       if is_after_stream_dead_line():
@@ -292,6 +289,7 @@ def click_close_record_list():
   Utils.click_safely(860, 260)
 
 def start_record():
+  Utils.print_with_datetime("--start")
   global current_time
   global today
   global today_millis
@@ -310,8 +308,10 @@ def start_record():
   time.sleep(4)
   init_config()
   
-  time.sleep(6)
+  time.sleep(2)
   init_count()
+  time.sleep(4)
+  setup_list()
 
   time.sleep(8)
   global try_times
@@ -338,10 +338,21 @@ def check_stream_url():
       time.sleep(3)
       check_stream_url()
 
+def is_record_started():
+  pixel = Utils.get_pixel_safely(780, 60)
+  time.sleep(.1)
+  pixel2 = Utils.get_pixel_safely(810, 60)
+  time.sleep(.1)
+  return pixel == (255, 0, 104) or pixel2 == ((255, 0, 104))
+
 def start_record_screen():
   click_window_left_top()
 
   time.sleep(.1)
+  click_stop()
+  if is_record_started():
+    stop_record_screen()
+  time.sleep(1)
   if Utils.press_safely("f10") == False:
     time.sleep(1)
     start_record_screen()
@@ -361,6 +372,7 @@ def start_record_stream(stream_url):
 
 def check_file():
   if not is_record_file_exists():
+    Utils.print_with_datetime("check_file: invalid")
     global try_times
     try_times += 1
     if try_times <= 5:
@@ -368,9 +380,16 @@ def check_file():
       
       global last_file_size
       last_file_size = -1
-      stop_record()
-      time.sleep(10)
+      time.sleep(1)
+      stop_record_stream()
+      time.sleep(1)
+      click_stop()
+      if is_record_started():
+        stop_record_screen()
+        time.sleep(10)
       check_stream_url()
+    else:
+      Utils.print_with_datetime("check_file: error")
   else:
     click_window_left_top()
     
@@ -403,15 +422,15 @@ def is_record_file_exists():
 
 def set_config():
   content = clipboard.paste()
-  global config_file
-  file = open(config_file, "w")
+  global live_info_file
+  file = open(live_info_file, "w")
   file.write(content)
   file.close()
 
 def init_config():
   try:
-    global config_file
-    file = open(config_file, "r")
+    global live_info_file
+    file = open(live_info_file, "r")
     config = file.read()
     if config == "":
       Utils.print_with_datetime("config file empty")
@@ -431,14 +450,15 @@ def parse_json(config, key):
     return ""
 
 def stop_record():
+  Utils.print_with_datetime("----end")
   time.sleep(1)
   stop_record_stream()
   time.sleep(1)
-  stop_record_screen()
+  click_stop()
+  if is_record_started():
+    stop_record_screen()
 
 def stop_record_screen():
-  click_stop()
-  
   time.sleep(1)
   stop_record_mm()
   time.sleep(1)
@@ -478,18 +498,23 @@ def stop_command():
 def stop_record_mm():
   Utils.hot_key_safely(["ctrl", "f10"])
 
-def shutdown_player():
-  shutdown_player_command = "mm api -v 0 shutdown_player"
-  os.popen(shutdown_player_command)
-
 def init_count():
-  global last_count
-  last_count = 0
   global last_time
   last_time = round(time.time())
   global max_count
-  random_count = random.randint(-30 * 1000, 30 * 1000)
-  max_count = 220 * 1000 + random_count
+  
+  # 258818585985041
+  global chat_room_id
+  if chat_room_id == "258818585985041":
+    random_count = random.randint(-10 * 1000, 10 * 1000)
+    max_count = 60 * 1000 + random_count
+  else:
+    random_count = random.randint(-30 * 1000, 30 * 1000)
+    max_count = 220 * 1000 + random_count
+
+def setup_list():
+  global last_count
+  last_count = 0
 
   if not is_list_open():
     toogle_list()
@@ -501,26 +526,27 @@ def init_count():
     
     global chat_room_id
     if string_to_int(chat_room_id) == 0:
-      Utils.print_with_datetime("chat room id error: {}".format(chat_room_id))
+      Utils.print_with_datetime("setup list chat room id error: {}".format(chat_room_id))
       if try_times > 3:
         return
       
       try_times += 1
       time.sleep(1)
       init_config()
-      time.sleep(3)
+      time.sleep(2)
       init_count()
+      time.sleep(4)
+      setup_list()
     else:
       check_id(chat_room_id)
   else:
-    Utils.print_with_datetime("open list error")
-    time.sleep(3)
-    init_count()
+    check_application()
+    time.sleep(2)
 
 def check_id(id):
   global try_times
   if try_times > 3:
-    Utils.print_with_datetime("chat room error")
+    Utils.print_with_datetime("check id chat room error")
     return
     
   click_enter()
@@ -533,11 +559,25 @@ def check_id(id):
     
     time.sleep(.1)
     if not is_chat_room_valid():
-      try_times += 1
-      check_id(id)
+      if is_stream_end():
+        time.sleep(1)
+        stop_record()
+        time.sleep(1)
+        return
+      else:
+        try_times += 1
+        time.sleep(10)
+        check_id(id)
   else:
-    try_times += 1
-    check_id(id)
+    if is_stream_end():
+      time.sleep(1)
+      stop_record()
+      time.sleep(1)
+      return
+    else:
+      try_times += 1
+      time.sleep(10)
+      check_id(id)
 
 def click_selected_item():
   Utils.click_safely(996, 835)
@@ -647,24 +687,31 @@ def update_count():
       return
     time.sleep(10)
   else:
-    if current_count < 10 * 1000:
-      add = random.randint(1200, 1600)
-    elif current_count > 120 * 1000 and current_count < 150 * 1000:
-      duration = random.randint(2, 4)
-      time.sleep(duration)
-      add = random.randint(600, 1000)
-    elif current_count > 150 * 1000 and current_count < 180 * 1000:
-      duration = random.randint(3, 5)
-      time.sleep(duration)
-      add = random.randint(400, 800)
-    elif current_count > 180 * 1000:
-      duration = random.randint(8, 10)
+    # 258818585985041
+    global chat_room_id
+    if chat_room_id == "258818585985041":
+      duration = random.randint(12, 14)
       time.sleep(duration)
       add = random.randint(200, 600)
     else:
-      duration = random.randint(1, 3)
-      time.sleep(duration)
-      add = random.randint(800, 1200)
+      if current_count < 10 * 1000:
+        add = random.randint(1200, 1600)
+      elif current_count > 120 * 1000 and current_count < 150 * 1000:
+        duration = random.randint(2, 4)
+        time.sleep(duration)
+        add = random.randint(600, 1000)
+      elif current_count > 150 * 1000 and current_count < 180 * 1000:
+        duration = random.randint(3, 5)
+        time.sleep(duration)
+        add = random.randint(400, 800)
+      elif current_count > 180 * 1000:
+        duration = random.randint(8, 10)
+        time.sleep(duration)
+        add = random.randint(200, 600)
+      else:
+        duration = random.randint(1, 3)
+        time.sleep(duration)
+        add = random.randint(800, 1200)
     current_count += add
       
     click_input()

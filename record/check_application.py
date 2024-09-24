@@ -52,7 +52,12 @@ def check_player():
       if ("result=-2" in result):
         launch_player()
       elif ("state=start_finished" in result):
-        Utils.print_with_datetime("--ready: {}".format(check_player_position()))
+        if not is_player_visible():
+          shutdown_player()
+          time.sleep(2)
+          check_player()
+        else:
+          print("player --ready")
         break
       else:
         try_times += 1
@@ -67,7 +72,7 @@ def shutdown_player():
   shutdown_player_command = "mm api -v 0 shutdown_player"
   os.popen(shutdown_player_command)
 
-def check_player_position():
+def is_player_visible():
   pixel = Utils.get_pixel_safely(28, 23)
   time.sleep(.1)
   return pixel == (15, 154, 255)
@@ -83,9 +88,19 @@ def check_application():
     time.sleep(.1)
     Utils.write_safely("\"{}\{}\"".format(application_path, application_name), "enter")
     time.sleep(5)
-  Utils.print_with_datetime("running: {}".format(check_application_position()))
+    
+  if not is_application_visible():
+    task_kill()
+    time.sleep(1)
+    check_application()
+  else:
+    print("application --ready")
 
-def check_application_position():
+def task_kill():
+  task_kill_command = "taskkill /f /im \"{}\"".format(application_name)
+  os.system(task_kill_command)
+
+def is_application_visible():
   pixel = Utils.get_pixel_safely(1135, 585)
   time.sleep(.1)
   return pixel == (236, 245, 255)

@@ -86,7 +86,7 @@ def testPixel():
     time.sleep(2)
     
     try:
-      pixel = pyautogui.pixel(1135, 585)
+      pixel = pyautogui.pixel(810, 60)
       print(pixel, type(pixel))
       print(pixel[0], pixel[1], pixel[2])
       break

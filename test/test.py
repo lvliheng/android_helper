@@ -142,10 +142,33 @@ def check_application():
   else:
     print("running")
 
+def task_kill():
+  task_kill_command = "taskkill /f /im \"Another Redis Desktop Manager.exe\""
+  os.system(task_kill_command)
+  time.sleep(1)
+  check_application()
+  
+def check():
+  check_application_command = "check_application"
+  pyautogui.write(check_application_command)
+  pyautogui.press("enter")
+
+def test_property():
+  a = 1
+  test_propery2(a)
+  print("test_property:", a)
+  
+def test_propery2(a):
+  a += 1
+  print("test_property2:", a)
+
+
 if __name__=="__main__":
-  test()
+  # test()
   # test2()
   # test3()
   # test4()
   # test_exception()
   # check_application()
+  # task_kill()
+  test_property()
