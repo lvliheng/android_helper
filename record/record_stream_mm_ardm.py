@@ -400,25 +400,29 @@ def is_record_file_exists():
   global directory
   global today_millis
   record_file = Path("{}\{}-stream.mp4".format(directory, today_millis))
-  current_file_size = os.path.getsize(record_file)
   
-  global try_times
-  global last_file_size
-  if current_file_size > 0:
-    if current_file_size > last_file_size:
-      try_times = 0
-      is_file_valid = True
-    else:
-      try_times += 1
-      if try_times <= 3:
+  if record_file.exists():
+    current_file_size = os.path.getsize(record_file)
+    
+    global try_times
+    global last_file_size
+    if current_file_size > 0:
+      if current_file_size > last_file_size:
+        try_times = 0
         is_file_valid = True
       else:
-        is_file_valid = False
+        try_times += 1
+        if try_times <= 3:
+          is_file_valid = True
+        else:
+          is_file_valid = False
+    else:
+      is_file_valid = False
+      
+    last_file_size = current_file_size
+    return record_file.is_file() and is_file_valid
   else:
-    is_file_valid = False
-    
-  last_file_size = current_file_size
-  return record_file.is_file() and is_file_valid
+    return False
 
 def set_config():
   content = clipboard.paste()

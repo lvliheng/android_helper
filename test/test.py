@@ -162,6 +162,10 @@ def test_propery2(a):
   a += 1
   print("test_property2:", a)
 
+def test_adb():
+  # command = "adb shell \"dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'\""
+  command = "adb shell \"dumpsys window windows\""
+  os.system(command)
 
 if __name__=="__main__":
   # test()
@@ -171,4 +175,5 @@ if __name__=="__main__":
   # test_exception()
   # check_application()
   # task_kill()
-  test_property()
+  # test_property()
+  test_adb()
