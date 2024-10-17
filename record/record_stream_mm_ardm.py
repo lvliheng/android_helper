@@ -63,8 +63,19 @@ def start():
   global current_time
   global today
   global today_millis
-  global try_times
-  try_times = 0
+  global check_page_times
+  check_page_times = 0
+  global check_url_times
+  check_url_times = 0
+  global check_id_times
+  check_id_times = 0
+  global check_file_times
+  check_file_times = 0
+  global check_exists_times
+  check_exists_times = 0
+  global check_list_times
+  check_list_times = 0
+  
   current_time = datetime.now()
   stream_dead_line = current_time + timedelta(hours = stream_refresh_hour)
 
@@ -132,9 +143,6 @@ def move_to_first_desktop():
   time.sleep(.1)
 
 def check_page():
-  global try_times
-  try_times = 0
-  
   while True:
     stop_play()
     time.sleep(.1)
@@ -149,8 +157,9 @@ def check_page():
       time.sleep(2)
       break
     else:
-      try_times += 1
-      if try_times > 3:
+      global check_page_times
+      check_page_times += 1
+      if check_page_times > 3:
         close_app()
         time.sleep(10)
         launch_app()
@@ -314,13 +323,11 @@ def start_record():
   setup_list()
 
   time.sleep(8)
-  global try_times
   if not is_stream_end():
-    try_times = 0
     check_stream_url()    
 
   time.sleep(10)
-  try_times = 0
+  reset_check_times()
   check_stream_state()
 
 def check_stream_url():
@@ -330,9 +337,9 @@ def check_stream_url():
     time.sleep(2)
     start_record_stream(stream_url)
   else:
-    global try_times
-    try_times += 1
-    if try_times > 5:
+    global check_url_times
+    check_url_times += 1
+    if check_url_times > 5:
       Utils.print_with_datetime("---fail")
     else:
       time.sleep(3)
@@ -370,12 +377,24 @@ def start_record_stream(stream_url):
     time.sleep(1)
     start_record_stream(stream_url)
 
+def reset_check_times():
+  global check_page_times
+  check_page_times = 0
+  global check_url_times
+  check_url_times = 0
+  global check_id_times
+  check_id_times = 0
+  global check_file_times
+  check_file_times = 0
+  global check_exists_times
+  check_exists_times = 0
+
 def check_file():
   if not is_record_file_exists():
     Utils.print_with_datetime("check_file: invalid")
-    global try_times
-    try_times += 1
-    if try_times <= 5:
+    global check_file_times
+    check_file_times += 1
+    if check_file_times <= 5:
       time.sleep(11)
       
       global last_file_size
@@ -404,15 +423,15 @@ def is_record_file_exists():
   if record_file.exists():
     current_file_size = os.path.getsize(record_file)
     
-    global try_times
+    global check_exists_times
     global last_file_size
     if current_file_size > 0:
       if current_file_size > last_file_size:
-        try_times = 0
+        check_exists_times = 0
         is_file_valid = True
       else:
-        try_times += 1
-        if try_times <= 3:
+        check_exists_times += 1
+        if check_exists_times <= 3:
           is_file_valid = True
         else:
           is_file_valid = False
@@ -524,17 +543,11 @@ def setup_list():
     toogle_list()
     time.sleep(2)
 
-  if is_list_open():
-    global try_times
-    try_times = 0
-    
+  if is_list_open():    
     global chat_room_id
     if string_to_int(chat_room_id) == 0:
       Utils.print_with_datetime("setup list chat room id error: {}".format(chat_room_id))
-      if try_times > 3:
-        return
       
-      try_times += 1
       time.sleep(1)
       init_config()
       time.sleep(2)
@@ -548,8 +561,8 @@ def setup_list():
     time.sleep(2)
 
 def check_id(id):
-  global try_times
-  if try_times > 3:
+  global check_id_times
+  if check_id_times > 3:
     Utils.print_with_datetime("check id chat room error")
     return
     
@@ -569,7 +582,7 @@ def check_id(id):
         time.sleep(1)
         return
       else:
-        try_times += 1
+        check_id_times += 1
         time.sleep(10)
         check_id(id)
   else:
@@ -579,7 +592,7 @@ def check_id(id):
       time.sleep(1)
       return
     else:
-      try_times += 1
+      check_id_times += 1
       time.sleep(10)
       check_id(id)
 
