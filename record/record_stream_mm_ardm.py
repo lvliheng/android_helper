@@ -65,12 +65,6 @@ def start():
   global today_millis
   global check_page_times
   check_page_times = 0
-  global check_url_times
-  check_url_times = 0
-  global check_id_times
-  check_id_times = 0
-  global check_file_times
-  check_file_times = 0
   global check_exists_times
   check_exists_times = 0
   global check_list_times
@@ -292,7 +286,18 @@ def click_window_right_top():
   Utils.click_safely(1000, 20)
 
 def click_stop():
+  button_pixel = Utils.get_pixel_safely(330, 620)
+  background_pixel = Utils.get_pixel_safely(330, 520)
+  if button_pixel == (183, 89, 195) and background_pixel == (255, 254, 255):
+    click_dialog_button()
+  else:
+    click_close_button()
+
+def click_dialog_button():
   Utils.click_safely(330, 620)
+  
+def click_close_button():
+  Utils.click_safely(720, 110)
 
 def click_close_record_list():
   Utils.click_safely(860, 260)
@@ -337,13 +342,8 @@ def check_stream_url():
     time.sleep(2)
     start_record_stream(stream_url)
   else:
-    global check_url_times
-    check_url_times += 1
-    if check_url_times > 5:
-      Utils.print_with_datetime("---fail")
-    else:
-      time.sleep(3)
-      check_stream_url()
+    click_stop()
+    time.sleep(10)
 
 def is_record_started():
   pixel = Utils.get_pixel_safely(780, 60)
@@ -356,7 +356,6 @@ def start_record_screen():
   click_window_left_top()
 
   time.sleep(.1)
-  click_stop()
   if is_record_started():
     stop_record_screen()
   time.sleep(1)
@@ -380,35 +379,21 @@ def start_record_stream(stream_url):
 def reset_check_times():
   global check_page_times
   check_page_times = 0
-  global check_url_times
-  check_url_times = 0
-  global check_id_times
-  check_id_times = 0
-  global check_file_times
-  check_file_times = 0
   global check_exists_times
   check_exists_times = 0
 
 def check_file():
   if not is_record_file_exists():
     Utils.print_with_datetime("check_file: invalid")
-    global check_file_times
-    check_file_times += 1
-    if check_file_times <= 5:
-      time.sleep(11)
-      
+    time.sleep(11)
+    
+    if not is_record_file_exists():
       global last_file_size
       last_file_size = -1
-      time.sleep(1)
-      stop_record_stream()
-      time.sleep(1)
       click_stop()
-      if is_record_started():
-        stop_record_screen()
-        time.sleep(10)
-      check_stream_url()
+      time.sleep(10)
     else:
-      Utils.print_with_datetime("check_file: error")
+      check_file()
   else:
     click_window_left_top()
     
@@ -530,7 +515,7 @@ def init_count():
   global chat_room_id
   if chat_room_id == "258818585985041":
     random_count = random.randint(-10 * 1000, 10 * 1000)
-    max_count = 60 * 1000 + random_count
+    max_count = 30 * 1000 + random_count
   else:
     random_count = random.randint(-30 * 1000, 30 * 1000)
     max_count = 220 * 1000 + random_count
@@ -545,15 +530,9 @@ def setup_list():
 
   if is_list_open():    
     global chat_room_id
-    if string_to_int(chat_room_id) == 0:
-      Utils.print_with_datetime("setup list chat room id error: {}".format(chat_room_id))
-      
-      time.sleep(1)
-      init_config()
-      time.sleep(2)
-      init_count()
-      time.sleep(4)
-      setup_list()
+    if string_to_int(chat_room_id) == 0:      
+      click_stop()
+      time.sleep(10)
     else:
       check_id(chat_room_id)
   else:
@@ -561,9 +540,9 @@ def setup_list():
     time.sleep(2)
 
 def check_id(id):
-  global check_id_times
-  if check_id_times > 3:
-    Utils.print_with_datetime("check id chat room error")
+  if id == "":
+    click_stop()
+    time.sleep(10)
     return
     
   click_enter()
@@ -582,7 +561,6 @@ def check_id(id):
         time.sleep(1)
         return
       else:
-        check_id_times += 1
         time.sleep(10)
         check_id(id)
   else:
@@ -592,7 +570,6 @@ def check_id(id):
       time.sleep(1)
       return
     else:
-      check_id_times += 1
       time.sleep(10)
       check_id(id)
 

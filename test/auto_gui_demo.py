@@ -81,14 +81,13 @@ def testscreen():
   screenshot.show()
 
 
-def testPixel():
+def testPixel(x, y):
   while True:
     time.sleep(2)
     
     try:
-      pixel = pyautogui.pixel(810, 60)
-      print(pixel, type(pixel))
-      print(pixel[0], pixel[1], pixel[2])
+      pixel = pyautogui.pixel(x, y)
+      print(x, ",", y, " : ", pixel)
       break
     except Exception as e:
       print("===test pixel: error:===\n", e)
@@ -102,6 +101,7 @@ def testPosition():
         print(positionStr, end='')
         print('\b' * len(positionStr), end='', flush=True)
   except KeyboardInterrupt:
+      testPixel(x, y)
       print('\n')
 
 def test_move_to(x, y):
@@ -142,8 +142,8 @@ def test_write():
 
 if __name__=="__main__":
   # testscreen()
-  # testPosition()
-  testPixel()
+  testPosition()
+  # testPixel()
   # autoClick()
   # testDrag()
   # testClick()
