@@ -15,6 +15,9 @@ def init():
   parser.add_argument("-p", "--package", help = "package name")
   parser.add_argument("-k", "--keyword", help = "keyword header")
 
+  global temp_chat_room_list
+  temp_chat_room_list = ["181595984166913"]
+
   args = parser.parse_args()
   global app_package
   if args.package != None:
@@ -156,6 +159,7 @@ def check_page():
       if check_page_times > 3:
         close_app()
         time.sleep(10)
+        reset_check_times()
         launch_app()
         time.sleep(10)
         check_page()
@@ -511,11 +515,11 @@ def init_count():
   last_time = round(time.time())
   global max_count
   
-  # 258818585985041
   global chat_room_id
-  if chat_room_id == "258818585985041":
+  global temp_chat_room_list
+  if chat_room_id in temp_chat_room_list:
     random_count = random.randint(-10 * 1000, 10 * 1000)
-    max_count = 30 * 1000 + random_count
+    max_count = 40 * 1000 + random_count
   else:
     random_count = random.randint(-30 * 1000, 30 * 1000)
     max_count = 220 * 1000 + random_count
@@ -681,9 +685,9 @@ def update_count():
       return
     time.sleep(10)
   else:
-    # 258818585985041
     global chat_room_id
-    if chat_room_id == "258818585985041":
+    global temp_chat_room_list
+    if chat_room_id in temp_chat_room_list:
       duration = random.randint(12, 14)
       time.sleep(duration)
       add = random.randint(200, 600)
