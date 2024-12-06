@@ -52,7 +52,7 @@ def check_player():
       if ("result=-2" in result):
         launch_player()
       elif ("state=start_finished" in result):
-        if not is_player_visible():
+        if not is_player_visible() or is_player_error():
           shutdown_player()
           time.sleep(2)
           check_player()
@@ -76,6 +76,13 @@ def is_player_visible():
   pixel = Utils.get_pixel_safely(28, 23)
   time.sleep(.1)
   return pixel == (15, 154, 255)
+
+def is_player_error():
+  red_icon_pixel = Utils.get_pixel_safely(406, 597)
+  time.sleep(.1)
+  restart_button_pixel = Utils.get_pixel_safely(284, 484)
+  time.sleep(.1)
+  return ((red_icon_pixel == (0, 209, 255) and restart_button_pixel == (255, 0, 104)))
 
 def check_application():
   global application_name
@@ -107,7 +114,7 @@ def is_application_visible():
 
 def click_window_left_top():
   time.sleep(.1)
-  Utils.click_safely(600, 20) 
+  Utils.click_safely(550, 20) 
 
 if __name__=="__main__":
   init()

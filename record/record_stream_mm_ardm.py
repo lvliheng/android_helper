@@ -36,7 +36,7 @@ def init():
   stream_duration_minute = 30
 
   start_hour = 19
-  start_minute = 29
+  start_minute = 28
   
   start_job(start_hour, start_minute)
 
@@ -121,17 +121,22 @@ def check_application():
     check_application()
 
 def check_app():
-  if is_app_running():
-    move_to_first_desktop()
-    click_window_left_top()
-    time.sleep(.1)
-    
-    if not is_stream_empty() and not is_stream_start() and not is_stream_end():
-      check_page()
+  if is_player_error():
+    click_restart_player()
+    time.sleep(45)
+    check_app()
   else:
-    launch_app()
-    time.sleep(10)
-    check_page()
+    if is_app_running():
+      move_to_first_desktop()
+      click_window_left_top()
+      time.sleep(.1)
+      
+      if not is_stream_empty() and not is_stream_start() and not is_stream_end():
+        check_page()
+    else:
+      launch_app()
+      time.sleep(10)
+      check_page()
 
 def move_to_first_desktop():
   Utils.hot_key_safely(["ctrl", "win", "left"])
@@ -188,33 +193,50 @@ def close_app():
 
 def check_stream_state():
   while True:
-    if is_stream_start():
-      start_record()
+    if is_player_error():
+      click_restart_player()
+      time.sleep(45)
+      start()
       break
-    elif is_stream_end():
-      stop_record()
+    else:
+      if is_stream_start():
+        start_record()
+        break
+      elif is_stream_end():
+        stop_record()
 
-      if is_after_stream_dead_line():
-        break
-      else:
-        time.sleep(13)
-        refresh()
-        time.sleep(7)
-    elif is_stream_empty():
-      if is_after_stream_dead_line():
-        break
-      else:
-        time.sleep(3)
-        refresh()
-        time.sleep(3)
-        if is_stream_start():
-          start_record()
+        if is_after_stream_dead_line():
           break
         else:
-          time.sleep(7) 
-    else:
-      time.sleep(1)
-      check_file()
+          time.sleep(13)
+          refresh()
+          time.sleep(7)
+      elif is_stream_empty():
+        if is_after_stream_dead_line():
+          break
+        else:
+          time.sleep(3)
+          refresh()
+          time.sleep(3)
+          if is_stream_start():
+            start_record()
+            break
+          else:
+            time.sleep(7) 
+      else:
+        time.sleep(1)
+        check_file()
+
+def is_player_error():
+  time.sleep(.1)
+  red_icon_pixel = Utils.get_pixel_safely(406, 597)
+  time.sleep(.1)
+  restart_button_pixel = Utils.get_pixel_safely(284, 484)
+  time.sleep(.1)
+  return ((red_icon_pixel == (0, 209, 255) and restart_button_pixel == (255, 0, 104)))
+
+def click_restart_player():
+  Utils.click_safely(284, 484)
 
 def is_after_stream_dead_line():
   global stream_dead_line
@@ -615,7 +637,7 @@ def get_selected_count():
   refresh_count()
   time.sleep(2)
   click_input()
-    
+  
   select_all()
   time.sleep(.1)
   
@@ -634,9 +656,14 @@ def string_to_int(value):
 
 def is_list_open():
   time.sleep(.1)
+  click_application_top()
+  time.sleep(.1)
   pixel = Utils.get_pixel_safely(1122, 1039)
   time.sleep(.1)
   return pixel == (245, 108, 108)
+
+def click_application_top():
+  Utils.click_safely(1300, 620)
 
 def toogle_list():
   Utils.click_safely(1048, 652)
