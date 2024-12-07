@@ -423,6 +423,9 @@ def check_file():
   else:
     click_window_left_top()
     
+    time.sleep(.1)
+    click_application_top()
+    time.sleep(.1)
     if is_list_open():
       update_count()
 
@@ -655,8 +658,6 @@ def string_to_int(value):
     return 0
 
 def is_list_open():
-  time.sleep(.1)
-  click_application_top()
   time.sleep(.1)
   pixel = Utils.get_pixel_safely(1122, 1039)
   time.sleep(.1)
