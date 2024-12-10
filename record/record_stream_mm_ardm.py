@@ -410,7 +410,7 @@ def reset_check_times():
 
 def check_file():
   if not is_record_file_exists():
-    Utils.print_with_datetime("check_file: invalid")
+    Utils.print_with_datetime("[check_file: invalid]")
     time.sleep(11)
     
     if not is_record_file_exists():
@@ -470,18 +470,18 @@ def init_config():
     file = open(live_info_file, "r")
     config = file.read()
     if config == "":
-      Utils.print_with_datetime("config file empty")
+      Utils.print_with_datetime("[init_config: config data empty]")
       return
     global chat_room_id
     chat_room_id = parse_json(config, "id")
     global stream_url
     stream_url = parse_json(config, "text")
   except:
-    Utils.print_with_datetime("init config error: {}".format(config))
+    Utils.print_with_datetime("[init_config: config data error: {}]".format(config))
 
-def parse_json(config, key):
+def parse_json(data, key):
   try:
-    value = json.loads(config)
+    value = json.loads(data)
     return value[key]
   except:
     return ""
@@ -590,17 +590,13 @@ def check_id(id):
         time.sleep(1)
         return
       else:
+        Utils.print_with_datetime("[check_id: chat room result ui invalid]")
         time.sleep(10)
         check_id(id)
   else:
-    if is_stream_end():
-      time.sleep(1)
-      stop_record()
-      time.sleep(1)
-      return
-    else:
-      time.sleep(10)
-      check_id(id)
+    Utils.print_with_datetime("[check_id: chat room result data invalid]")
+    time.sleep(10)
+    check_id(id)  
 
 def click_selected_item():
   Utils.click_safely(996, 835)

@@ -14,6 +14,8 @@ import subprocess
 import requests
 from PIL import Image
 import json
+import requests
+from pynput import keyboard
 
 def test():
   print("test")
@@ -167,6 +169,41 @@ def test_adb():
   command = "adb shell \"dumpsys window windows\""
   os.system(command)
 
+def test_keyboard_listener():
+  global listener
+  listener = keyboard.Listener(on_press=on_press)
+  listener.start()
+  listener.join()
+  
+def on_press(key):
+  if key == keyboard.Key.esc:
+    global listener
+    listener.stop()
+  elif key == keyboard.Key.enter:
+    print("enter")
+    get_position()
+  else:
+    print("on_press:", key)
+
+def get_pixel(x, y):
+  pixel = pyautogui.pixel(x, y)
+  print("({}, {}) : {}".format(x, y, pixel))
+
+def get_position():
+  x, y = pyautogui.position()
+  positionStr = 'X: ' + str(x).rjust(4) + ' Y: ' + str(y).rjust(4)
+  print(positionStr, end='')
+  print('\b' * len(positionStr), end='', flush=True)
+  get_pixel(x, y)
+
+def test_create_file():
+  root = "D:\\_temp\\stream\\"
+  action_config_file = "{}{}".format(root, "new_action_config")
+  is_exists = Path(action_config_file).exists()
+  print("is_exists:", is_exists)
+  if not is_exists:
+    open(action_config_file, "w")
+
 if __name__=="__main__":
   # test()
   # test2()
@@ -176,4 +213,6 @@ if __name__=="__main__":
   # check_application()
   # task_kill()
   # test_property()
-  test_adb()
+  # test_adb()
+  # test_keyboard_listener()
+  test_create_file()
