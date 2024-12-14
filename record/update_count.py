@@ -8,6 +8,7 @@ import argparse
 import random
 import json
 import requests
+import base64
 
 from utils import Utils
 
@@ -45,8 +46,8 @@ def init():
   global stream_duration_minute
   stream_duration_minute = 30
 
-  start_hour = 15
-  start_minute = 20
+  start_hour = 19
+  start_minute = 28
   
   start_job(start_hour, start_minute)
 
@@ -93,6 +94,9 @@ def start():
   global action_config_file
   action_config_file = "{}{}".format(root, "action_config")
   check_config_file(action_config_file)
+  global token_file
+  token_file = "{}{}".format(root, "token")
+  check_config_file(token_file)
   
   global live_config
   live_config = ""
@@ -115,7 +119,12 @@ def start():
   init_config()
   time.sleep(2)
   
-  check_state()
+  global token
+  token = get_token()
+  if token == "":
+    login()
+  else:
+    check_state()
   print(f"------------{today}------------")
 
 def check_config_file(file_path):
@@ -211,61 +220,118 @@ def check_state():
         if is_list_open():
           update_count()
       
-      check_live_list()
+      result = check_live_list()
+      if result == -1:
+        login()
+        break
 
 def is_after_stream_dead_line():
   global stream_dead_line
   return datetime.now() > stream_dead_line
 
+def login():
+  global request_config
+  login = parse_json(request_config, "login")
+  url = parse_dict(login, "url")
+  grant_type = parse_dict(login, "grantType")
+  account = decode(parse_dict(login, "account"))
+  password = decode(parse_dict(login, "password"))
+  
+  headers = {"Content-Type": "application/json; charset=utf-8"}
+  body = {"grantType": grant_type, "userName": account, "password": password}
+  response = requests.post(url=url, headers=headers, json=body)
+  status_code = response.status_code
+  if status_code == 200:
+    data = response.json()
+    code = data["code"]
+    if code == 200:
+      try:
+        global token
+        token = data["data"]["access_token"]
+        if token != "":
+          set_token()
+          check_state()
+      except:
+        Utils.print_with_datetime("[login: data error]")
+    else:
+      Utils.print_with_datetime("[login: request error]")
+    
+def set_token():
+  global token_file
+  file = open(token_file, "w")
+  global token
+  file.write(token)
+  file.close()
+      
+def decode(encode_value):
+  decode_bytes = base64.b64decode(encode_value.encode("ascii"))
+  return decode_bytes.decode("ascii")
+
+def get_token():
+  global token_file
+  token_data = open(token_file, "r")
+  return token_data.read()
+
 def check_live_list():
   global request_config
-  url = parse_json(request_config, "url")
-  token = parse_json(request_config, "token")
+  live_json = parse_json(request_config, "live")
+  url = parse_dict(live_json, "url")
+  token = get_token()
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   body = {"mobile": ""}
+  
   response = requests.post(url=url, headers=headers, json=body)
-  code = response.status_code
-  if code == 200:
+  status_code = response.status_code
+  if status_code == 200:
     data = response.json()
-    try:
-      live = data["data"]["live"]
-    except:
-      Utils.print_with_datetime("[check_live_list: data error]")
-      time.sleep(10)
-      check_live_list()
-    
-    global live_config
-    global live_room_id
-    global chat_room_id
-    if len(live) > 0:
-      is_chat_room_changed = False
-      for item in live:
-        try:
-          item_live_room_id = parse_dict(item, "liveRoomId")
-          
-          if item_live_room_id in live_config:
-            if live_room_id != item_live_room_id:
-              is_chat_room_changed = True
-              
-            live_room_id = item_live_room_id
-            chat_room_id = parse_dict(item, "chatRoomId")
-            break
+    code = data["code"]
+    if code == 200:
+      try:
+        live = data["data"]["live"]
+      except:
+        Utils.print_with_datetime("[check_live_list: data error]")
+        time.sleep(10)
+        check_live_list()
+      
+      global live_config
+      global live_room_id
+      global chat_room_id
+      if len(live) > 0:
+        is_chat_room_changed = False
+        for item in live:
+          try:
+            item_live_room_id = parse_dict(item, "liveRoomId")
+            
+            if item_live_room_id in live_config:
+              if live_room_id != item_live_room_id:
+                is_chat_room_changed = True
+                
+              live_room_id = item_live_room_id
+              chat_room_id = parse_dict(item, "chatRoomId")
+              break
+            else:
+              Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
+          except:
+            Utils.print_with_datetime("[check_live_list: data error]")
+            continue
+            
+        if is_chat_room_changed:
+          if len(chat_room_id) > 0:
+            start_update()
           else:
-            Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
-        except:
-          Utils.print_with_datetime("[check_live_list: data error]")
-          continue
-          
-      if is_chat_room_changed:
-        if len(chat_room_id) > 0:
-          start_update()
-        else:
-          Utils.print_with_datetime("[check_live_list: chat room id error]")
-          time.sleep(10)
-          check_live_list()
+            Utils.print_with_datetime("[check_live_list: chat room id error]")
+            time.sleep(10)
+            check_live_list()
+      else:
+        Utils.print_with_datetime("[check_live_list: live list empty]")
+        reset_ids()
+        time.sleep(10)
+        check_live_list()
+    elif code == 301:
+      Utils.print_with_datetime("[check_live_list: need login]")
+      return -1
     else:
-      Utils.print_with_datetime("[check_live_list: live list empty]")
-      reset_ids()
+      Utils.print_with_datetime("[check_live_list: check live list fail]")
       time.sleep(10)
       check_live_list()
   else:
@@ -486,7 +552,7 @@ def update_count():
         time.sleep(duration)
         add = random.randint(800, 1200)
     current_count += add
-      
+
     click_input()
     time.sleep(.1)
     select_all()
@@ -497,7 +563,7 @@ def update_count():
     if is_list_closed():
       return
     save()
-      
+
     now = round(time.time())
     Utils.print_with_datetime("+{} +{} {}".format(get_string_full_length(now - last_time, 2), get_string_full_length(add, 4), current_count))
     last_time = now

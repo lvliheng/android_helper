@@ -16,6 +16,7 @@ from PIL import Image
 import json
 import requests
 from pynput import keyboard
+import base64
 
 def test():
   print("test")
@@ -204,6 +205,16 @@ def test_create_file():
   if not is_exists:
     open(action_config_file, "w")
 
+def test_base64():
+  test = "a"
+  encode_bytes = base64.b64encode(test.encode("ascii"))
+  encode_result = encode_bytes.decode("ascii")
+  print(test, " ==> ", encode_result)
+  
+  decode_bytes = base64.b64decode(encode_result.encode("ascii"))
+  decode_result = decode_bytes.decode("ascii")
+  print(encode_result, " ==> ", decode_result)
+
 if __name__=="__main__":
   # test()
   # test2()
@@ -215,4 +226,5 @@ if __name__=="__main__":
   # test_property()
   # test_adb()
   # test_keyboard_listener()
-  test_create_file()
+  # test_create_file()
+  test_base64()
