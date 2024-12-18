@@ -18,6 +18,9 @@ import requests
 from pynput import keyboard
 import base64
 
+import asyncio
+import websockets
+
 def test():
   print("test")
 
@@ -215,6 +218,25 @@ def test_base64():
   decode_result = decode_bytes.decode("ascii")
   print(encode_result, " ==> ", decode_result)
 
+def websockets_start():
+  global connections
+  connections = set()
+  
+  asyncio.run(websockets_main())
+  
+async def websockets_main():
+  async with websockets.serve(websockets_echo, "192.168.0.2", 8765):
+    await asyncio.Future()
+
+async def websockets_echo(websocket):
+  global connections
+  if websocket not in connections:
+    connections.add(websocket)
+    
+  async for message in websocket:
+    print("websockets_echo: message:", message)
+    websockets.broadcast(connections, message)
+
 if __name__=="__main__":
   # test()
   # test2()
@@ -227,4 +249,5 @@ if __name__=="__main__":
   # test_adb()
   # test_keyboard_listener()
   # test_create_file()
-  test_base64()
+  # test_base64()
+  websockets_start()

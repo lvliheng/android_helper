@@ -13,6 +13,8 @@ import base64
 from utils import Utils
 
 def init():
+  Utils.disable_fail_safe()
+  
   parser = argparse.ArgumentParser()
   parser.add_argument("-k", "--keyword", help = "keyword header")
   parser.add_argument("-n", "--name", help = "application name")

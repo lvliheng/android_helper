@@ -2,6 +2,9 @@ from datetime import datetime
 import pyautogui
 import time
 
+def disable_fail_safe():
+  pyautogui.FAILSAFE = False
+
 def move_to_safely(x, y):
   try:
     pyautogui.moveTo(x, y)

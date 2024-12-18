@@ -11,6 +11,8 @@ import json
 from utils import Utils
 
 def init():
+  Utils.disable_fail_safe()
+  
   parser = argparse.ArgumentParser()
   parser.add_argument("-p", "--package", help = "package name")
   parser.add_argument("-k", "--keyword", help = "keyword header")
@@ -94,7 +96,7 @@ def start():
   global stream_url
   stream_url = ""
 
-  print(f"------------{today}------------")
+  print(f"------------{today}------------")  
   check_application()
   time.sleep(45)
   check_app()
