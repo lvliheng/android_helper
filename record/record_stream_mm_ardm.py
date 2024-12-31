@@ -98,7 +98,7 @@ def start():
 
   print(f"------------{today}------------")  
   check_application()
-  time.sleep(45)
+  time.sleep(30)
   check_app()
 
   clipboard.copy("")
@@ -125,7 +125,7 @@ def check_application():
 def check_app():
   if is_player_error():
     click_restart_player()
-    time.sleep(45)
+    time.sleep(30)
     check_app()
   else:
     if is_app_running():
@@ -431,7 +431,8 @@ def check_file():
     if is_list_open():
       update_count()
     else:
-      setup_list()
+      if not is_stream_end():
+        setup_list()
 
 def is_record_file_exists():
   global directory
@@ -554,7 +555,6 @@ def init_count():
     max_count = 220 * 1000 + random_count
 
 def setup_list():
-  Utils.print_with_datetime("setup_list")
   global last_count
   last_count = 0
 
@@ -598,8 +598,6 @@ def check_id(id):
         Utils.print_with_datetime("[check_id: chat room result ui invalid]")
         time.sleep(10)
         check_id(id)
-    else:
-      Utils.print_with_datetime("--ready")
   else:
     Utils.print_with_datetime("[check_id: chat room result data invalid]")
     time.sleep(10)
@@ -691,20 +689,23 @@ def update_count():
   select_all()
   time.sleep(.1)
   
-  if is_list_closed_or_stream_end():
+  if not is_list_open() or is_stream_end():
     return
   copy_selected()
 
   try:
     current_count = int(clipboard.paste())
   except:
-    current_count = 0
+    current_count = -1
 
   global max_count
   global last_count
   global last_time
   
-  if current_count <= 0:
+  if current_count < 0:
+    setup_list()
+    time.sleep(1)
+  elif current_count == 0:
     time.sleep(1)
   elif current_count >= max_count:
     toogle_list()
@@ -712,7 +713,7 @@ def update_count():
   elif current_count - last_count > 3000:
     Utils.print_with_datetime(current_count)
     last_count = current_count
-    if is_list_closed_or_stream_end():
+    if not is_list_open() or is_stream_end():
       return
     time.sleep(10)
   else:
@@ -750,7 +751,7 @@ def update_count():
     Utils.write_safely(str(current_count), "")
 
     time.sleep(.1)
-    if is_list_closed_or_stream_end():
+    if not is_list_open() or is_stream_end():
       return
     save()
       
