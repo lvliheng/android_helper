@@ -241,7 +241,7 @@ def login():
   
   headers = {"Content-Type": "application/json; charset=utf-8"}
   body = {"grantType": grant_type, "userName": account, "password": password}
-  response = requests.post(url=url, headers=headers, json=body)
+  response = requests.post(url = url, headers = headers, json = body)
   status_code = response.status_code
   if status_code == 200:
     data = response.json()
@@ -282,7 +282,7 @@ def check_live_list():
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   body = {"mobile": ""}
   
-  response = requests.post(url=url, headers=headers, json=body)
+  response = requests.post(url = url, headers = headers, json = body)
   status_code = response.status_code
   if status_code == 200:
     data = response.json()

@@ -430,6 +430,8 @@ def check_file():
     time.sleep(.1)
     if is_list_open():
       update_count()
+    else:
+      setup_list()
 
 def is_record_file_exists():
   global directory
@@ -552,6 +554,7 @@ def init_count():
     max_count = 220 * 1000 + random_count
 
 def setup_list():
+  Utils.print_with_datetime("setup_list")
   global last_count
   last_count = 0
 
@@ -568,7 +571,7 @@ def setup_list():
       check_id(chat_room_id)
   else:
     check_application()
-    time.sleep(2)
+    time.sleep(10)
 
 def check_id(id):
   if id == "":
@@ -595,6 +598,8 @@ def check_id(id):
         Utils.print_with_datetime("[check_id: chat room result ui invalid]")
         time.sleep(10)
         check_id(id)
+    else:
+      Utils.print_with_datetime("--ready")
   else:
     Utils.print_with_datetime("[check_id: chat room result data invalid]")
     time.sleep(10)
