@@ -510,13 +510,16 @@ def update_count():
   try:
     current_count = int(clipboard.paste())
   except:
-    current_count = 0
+    current_count = -1
 
   global max_count
   global last_count
   global last_time
   
-  if current_count <= 0:
+  if current_count < 0:
+    setup_list()
+    time.sleep(1)
+  elif current_count == 0:
     time.sleep(1)
   elif current_count >= max_count:
     toogle_list()

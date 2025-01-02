@@ -97,8 +97,10 @@ def start():
   stream_url = ""
 
   print(f"------------{today}------------")  
+  move_to_first_desktop()
+  time.sleep(10)
   check_application()
-  time.sleep(30)
+  time.sleep(45)
   check_app()
 
   clipboard.copy("")
@@ -125,11 +127,10 @@ def check_application():
 def check_app():
   if is_player_error():
     click_restart_player()
-    time.sleep(30)
+    time.sleep(45)
     check_app()
   else:
     if is_app_running():
-      move_to_first_desktop()
       click_window_left_top()
       time.sleep(.1)
       

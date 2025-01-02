@@ -92,9 +92,11 @@ def check_application():
   process_list = os.popen(command).readlines()
   if len(process_list) == 0:
     Utils.hot_key_safely(["win", "r"])
-    time.sleep(.1)
+    time.sleep(1)
+    select_all()
+    time.sleep(1)
     Utils.write_safely("\"{}\{}\"".format(application_path, application_name), "enter")
-    time.sleep(5)
+    time.sleep(10)
     
   if not is_application_visible():
     task_kill()
@@ -102,6 +104,9 @@ def check_application():
     check_application()
   else:
     print("application --ready")
+
+def select_all():
+  Utils.hot_key_safely(["ctrl", "a"])
 
 def task_kill():
   task_kill_command = "taskkill /f /im \"{}\"".format(application_name)
