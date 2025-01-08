@@ -34,6 +34,7 @@ def start():
   time.sleep(1)
 
   check_player()
+  time.sleep(2)
   check_application()
 
 def check_player():
@@ -88,21 +89,25 @@ def check_application():
   global application_name
   global application_path
   
-  command = "tasklist | findstr \"{}\"".format(application_name)
+  filter_name = application_name[:21]
+  command = "tasklist | findstr \"{}\"".format(filter_name)
   process_list = os.popen(command).readlines()
   if len(process_list) == 0:
     Utils.hot_key_safely(["win", "r"])
-    time.sleep(1)
+    time.sleep(.1)
+    click_input_box()
+    time.sleep(.1)
     select_all()
-    time.sleep(1)
+    time.sleep(.1)
     Utils.write_safely("\"{}\{}\"".format(application_path, application_name), "enter")
     time.sleep(10)
-    
-  if not is_application_visible():
-    task_kill()
-    time.sleep(1)
-    check_application()
   else:
+    if not is_application_visible():
+      task_kill()
+      time.sleep(1)
+      check_application()
+      
+  if is_application_visible():
     print("application --ready")
 
 def select_all():
@@ -119,7 +124,11 @@ def is_application_visible():
 
 def click_window_left_top():
   time.sleep(.1)
-  Utils.click_safely(550, 20) 
+  Utils.click_safely(550, 20)
+  
+def click_input_box():
+  time.sleep(.1)
+  Utils.click_safely(90, 140) 
 
 if __name__=="__main__":
   init()
