@@ -95,12 +95,8 @@ def check_application():
   if len(process_list) == 0:
     Utils.hot_key_safely(["win", "r"])
     time.sleep(.1)
-    click_input_box()
-    time.sleep(.1)
-    select_all()
-    time.sleep(.1)
     Utils.write_safely("\"{}\{}\"".format(application_path, application_name), "enter")
-    time.sleep(10)
+    time.sleep(5)
   else:
     if not is_application_visible():
       task_kill()
@@ -126,9 +122,5 @@ def click_window_left_top():
   time.sleep(.1)
   Utils.click_safely(550, 20)
   
-def click_input_box():
-  time.sleep(.1)
-  Utils.click_safely(90, 140) 
-
 if __name__=="__main__":
   init()

@@ -137,7 +137,8 @@ def check_application():
   global application_name
   global application_path
   
-  command = "tasklist | findstr \"{}\"".format(application_name)
+  filter_name = application_name[:21]
+  command = "tasklist | findstr \"{}\"".format(filter_name)
   process_list = os.popen(command).readlines()
   if len(process_list) == 0:
     Utils.hot_key_safely(["win", "r"])
