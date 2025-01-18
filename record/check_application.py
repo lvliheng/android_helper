@@ -120,7 +120,7 @@ def is_application_visible():
 
 def click_window_left_top():
   time.sleep(.1)
-  Utils.click_safely(550, 20)
+  Utils.click_safely(500, 20)
   
 if __name__=="__main__":
   init()

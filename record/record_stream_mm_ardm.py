@@ -10,9 +10,10 @@ import json
 
 from utils import Utils
 
-def init():
-  Utils.disable_fail_safe()
-  
+import pyautogui
+pyautogui.FAILSAFE = False
+
+def init():  
   parser = argparse.ArgumentParser()
   parser.add_argument("-p", "--package", help = "package name")
   parser.add_argument("-k", "--keyword", help = "keyword header")
@@ -309,7 +310,7 @@ def click_start():
   Utils.click_safely(320, 220)
 
 def click_window_left_top():
-  Utils.click_safely(550, 20)
+  Utils.click_safely(500, 20)
 
 def click_window_right_top():
   Utils.click_safely(1000, 20)
@@ -553,7 +554,7 @@ def init_count():
     max_count = 40 * 1000 + random_count
   else:
     random_count = random.randint(-30 * 1000, 30 * 1000)
-    max_count = 220 * 1000 + random_count
+    max_count = 250 * 1000 + random_count
 
 def setup_list():
   global last_count
@@ -727,15 +728,15 @@ def update_count():
     else:
       if current_count < 10 * 1000:
         add = random.randint(1200, 1600)
-      elif current_count > 120 * 1000 and current_count < 150 * 1000:
+      elif current_count > 140 * 1000 and current_count < 180 * 1000:
         duration = random.randint(2, 4)
         time.sleep(duration)
         add = random.randint(600, 1000)
-      elif current_count > 150 * 1000 and current_count < 180 * 1000:
+      elif current_count > 180 * 1000 and current_count < 220 * 1000:
         duration = random.randint(3, 5)
         time.sleep(duration)
         add = random.randint(400, 800)
-      elif current_count > 180 * 1000:
+      elif current_count > 220 * 1000:
         duration = random.randint(8, 10)
         time.sleep(duration)
         add = random.randint(200, 600)
