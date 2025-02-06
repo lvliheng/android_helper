@@ -523,9 +523,6 @@ def update_count():
     time.sleep(1)
   elif current_count == 0:
     time.sleep(1)
-  elif current_count >= max_count:
-    toogle_list()
-    time.sleep(1)
   elif current_count - last_count > 3000:
     Utils.print_with_datetime(current_count)
     last_count = current_count
@@ -536,28 +533,33 @@ def update_count():
     global chat_room_id
     global temp_chat_room_list
     if chat_room_id in temp_chat_room_list:
-      duration = random.randint(12, 14)
+      duration = random.randint(12, 16)
       time.sleep(duration)
       add = random.randint(200, 600)
     else:
-      if current_count < 10 * 1000:
-        add = random.randint(1200, 1600)
-      elif current_count > 140 * 1000 and current_count < 180 * 1000:
-        duration = random.randint(2, 4)
+      if current_count >= max_count:
+        duration = random.randint(16, 20)
         time.sleep(duration)
-        add = random.randint(600, 1000)
-      elif current_count > 180 * 1000 and current_count < 220 * 1000:
-        duration = random.randint(3, 5)
-        time.sleep(duration)
-        add = random.randint(400, 800)
-      elif current_count > 220 * 1000:
-        duration = random.randint(8, 10)
-        time.sleep(duration)
-        add = random.randint(200, 600)
+        add = random.randint(0, 400)
       else:
-        duration = random.randint(1, 3)
-        time.sleep(duration)
-        add = random.randint(800, 1200)
+        if current_count < 10 * 1000:
+          add = random.randint(1200, 1600)
+        elif current_count > 140 * 1000 and current_count < 180 * 1000:
+          duration = random.randint(2, 4)
+          time.sleep(duration)
+          add = random.randint(600, 1000)
+        elif current_count > 180 * 1000 and current_count < 220 * 1000:
+          duration = random.randint(3, 5)
+          time.sleep(duration)
+          add = random.randint(400, 800)
+        elif current_count > 220 * 1000:
+          duration = random.randint(8, 10)
+          time.sleep(duration)
+          add = random.randint(200, 600)
+        else:
+          duration = random.randint(1, 3)
+          time.sleep(duration)
+          add = random.randint(800, 1200)
     current_count += add
 
     click_input()

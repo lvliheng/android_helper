@@ -100,7 +100,7 @@ def check_application():
   else:
     if not is_application_visible():
       task_kill()
-      time.sleep(1)
+      time.sleep(2)
       check_application()
       
   if is_application_visible():
