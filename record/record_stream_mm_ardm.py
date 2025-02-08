@@ -724,9 +724,14 @@ def update_count():
       add = random.randint(200, 600)
     else:
       if current_count >= max_count:
-        duration = random.randint(16, 20)
-        time.sleep(duration)
-        add = random.randint(0, 400)
+        if current_count >= max_count * 1.2:
+          duration = random.randint(20, 24)
+          time.sleep(duration)
+          add = random.randint(0, 100)
+        else:
+          duration = random.randint(16, 20)
+          time.sleep(duration)
+          add = random.randint(0, 400)
       else:
         if current_count < 10 * 1000:
           add = random.randint(1200, 1600)
