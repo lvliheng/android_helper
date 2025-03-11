@@ -51,7 +51,8 @@ def init():
   start_hour = 19
   start_minute = 28
   
-  start_job(start_hour, start_minute)
+  # start_job(start_hour, start_minute)
+  start()
 
 def start_job(start_hour, start_minute):
   global stream_refresh_hour
@@ -284,8 +285,10 @@ def check_live_list():
               break
             else:
               Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
+              time.sleep(10)
           except:
             Utils.print_with_datetime("[check_live_list: data error]")
+            time.sleep(10)
             continue
             
         if is_chat_room_changed:
