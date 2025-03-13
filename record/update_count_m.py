@@ -285,7 +285,6 @@ def check_live_list():
               break
             else:
               Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
-              time.sleep(10)
           except:
             Utils.print_with_datetime("[check_live_list: data error]")
             time.sleep(10)
@@ -298,6 +297,10 @@ def check_live_list():
             Utils.print_with_datetime("[check_live_list: chat room id error]")
             time.sleep(10)
             check_live_list()
+        else:
+          Utils.print_with_datetime("[check_live_list: not in live_config]")
+          time.sleep(10)
+          check_live_list()
       else:
         Utils.print_with_datetime("[check_live_list: live list empty]")
         reset_ids()
