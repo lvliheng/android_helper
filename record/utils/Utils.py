@@ -58,11 +58,7 @@ def write_safely(content, key):
 def get_pixel_safely(x, y):
   try:
     pixel = pyautogui.pixel(x, y)
-    if type(pixel) == tuple:
-      return pixel
-    else:
-      time.sleep(1)
-      get_pixel_safely(x, y)
+    return pixel
   except Exception as e:
     print_with_datetime("get pixel: error:\n{}".format(e))
     time.sleep(1)

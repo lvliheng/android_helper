@@ -50,7 +50,8 @@ def init():
   start_hour = 19
   start_minute = 28
   
-  start_job(start_hour, start_minute)
+  # start_job(start_hour, start_minute)
+  start()
 
 def start_job(start_hour, start_minute):
   global stream_refresh_hour
