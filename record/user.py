@@ -36,7 +36,7 @@ def start():
   request_config = ""
 
   init_config()
-  time.sleep(2)
+  time.sleep(.1)
   
   global token
   token = get_token()
@@ -88,9 +88,6 @@ def get_user_info():
   if status_code == 200:
     data = response.json()
     code = data["code"]
-    print("code:", code)
-    message = data["message"]
-    print("message:", message)
     if code == 200:
       try:
         user_info = data["data"]
