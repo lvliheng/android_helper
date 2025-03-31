@@ -43,7 +43,11 @@ def start():
   if token == "":
     login()
   else:
-    get_user_info()
+    global id
+    if id.startswith("im_"):
+      get_imuser_info()
+    else:
+      get_user_info(id)
 
 def check_config_file(file_path):
   if not Path(file_path).exists():
@@ -74,14 +78,13 @@ def parse_dict(data, key):
   except:
     return ""
 
-def get_user_info():
+def get_user_info(id):
   global request_config
   user = parse_json(request_config, "user")
   url = parse_dict(user, "url")
   global token
   
-  headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
-  global id
+  headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}  
   body = {"userId": id}
   response = requests.post(url = url, headers = headers, json = body)
   status_code = response.status_code
@@ -96,6 +99,31 @@ def get_user_info():
         Utils.print_with_datetime("[get_user_info: data error]")
     else:
       Utils.print_with_datetime("[get_user_info: request error]")
+
+def get_imuser_info():
+  global request_config
+  user = parse_json(request_config, "imuser")
+  url = parse_dict(user, "url")
+  global token
+  
+  headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
+  global id
+  body = [id]
+  response = requests.post(url = url, headers = headers, json = body)
+  status_code = response.status_code
+  if status_code == 200:
+    data = response.json()
+    code = data["code"]
+    if code == 200:
+      try:
+        imuser_info = data["data"]
+        user_id = imuser_info[0]["userId"]
+        get_user_info(user_id)
+      except:
+        Utils.print_with_datetime("[get_imuser_info: data error]")
+    else:
+      Utils.print_with_datetime("[get_imuser_info: request error]")
+
 
 def login():
   global request_config
@@ -118,7 +146,8 @@ def login():
         token = data["data"]["access_token"]
         if token != "":
           set_token()
-          get_user_info()
+          global id
+          get_user_info(id)
       except:
         Utils.print_with_datetime("[login: data error]")
     else:
