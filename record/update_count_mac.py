@@ -250,7 +250,7 @@ def check_live_list():
   global request_config
   live_json = parse_json(request_config, "live")
   url = parse_dict(live_json, "url")
-  token = get_token()
+  global token
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   body = {"mobile": ""}
   

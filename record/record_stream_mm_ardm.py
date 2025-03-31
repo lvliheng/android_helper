@@ -338,11 +338,11 @@ def start_record():
   global today
   global today_millis
   global stream_dead_line
-  global stream_duration_minute
+  global stream_refresh_hour
 
   current_time = datetime.now()
   today_millis = "{}-{}".format(today, current_time.strftime("%f"))
-  stream_dead_line = datetime.now() + timedelta(minutes = stream_duration_minute)
+  stream_dead_line = datetime.now() + timedelta(hours = stream_refresh_hour)
   
   click_start()
 
