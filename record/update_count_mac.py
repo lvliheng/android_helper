@@ -16,8 +16,6 @@ def init():
   
   parser = argparse.ArgumentParser()
   parser.add_argument("-k", "--keyword", help = "keyword header")
-  parser.add_argument("-n", "--name", help = "application name")
-  parser.add_argument("-p", "--path", help = "application path")
 
   global temp_chat_room_list
   temp_chat_room_list = ["181595984166913"]
@@ -29,18 +27,6 @@ def init():
     keyword_header = args.keyword
   else:
     keyword_header = ""
-    
-  global application_name
-  if args.name != None:
-    application_name = args.name
-  else:
-    application_name = ""
-    
-  global application_path
-  if args.path != None:
-    application_path = args.path
-  else:
-    application_path = ""
 
   global stream_refresh_hour
   stream_refresh_hour = 1
@@ -251,7 +237,7 @@ def check_live_list():
   global request_config
   live_json = parse_json(request_config, "live")
   url = parse_dict(live_json, "url")
-  token = get_token()
+  global token
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   body = {"mobile": ""}
   
