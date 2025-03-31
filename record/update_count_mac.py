@@ -16,8 +16,6 @@ def init():
   
   parser = argparse.ArgumentParser()
   parser.add_argument("-k", "--keyword", help = "keyword header")
-  parser.add_argument("-n", "--name", help = "application name")
-  parser.add_argument("-p", "--path", help = "application path")
 
   global temp_chat_room_list
   temp_chat_room_list = ["181595984166913"]
@@ -29,18 +27,6 @@ def init():
     keyword_header = args.keyword
   else:
     keyword_header = ""
-    
-  global application_name
-  if args.name != None:
-    application_name = args.name
-  else:
-    application_name = ""
-    
-  global application_path
-  if args.path != None:
-    application_path = args.path
-  else:
-    application_path = ""
 
   global stream_refresh_hour
   stream_refresh_hour = 1
@@ -50,7 +36,8 @@ def init():
   start_hour = 19
   start_minute = 28
   
-  start_job(start_hour, start_minute)
+  # start_job(start_hour, start_minute)
+  start()
 
 def start_job(start_hour, start_minute):
   global stream_refresh_hour
