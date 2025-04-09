@@ -103,6 +103,8 @@ def start():
   
   global live_config
   live_config = ""
+  global white_list
+  white_list = ""
   global request_config
   request_config = ""
   global action_config
@@ -137,6 +139,9 @@ def init_config():
   live_config_data = open(live_config_file, "r")
   global live_config
   live_config = live_config_data.read()
+  separator = ","
+  global white_list
+  white_list = separator.join(parse_json(live_config, "whiteList"))
   
   global request_config_file
   request_config_data = open(request_config_file, "r")
@@ -267,7 +272,7 @@ def check_live_list():
         time.sleep(10)
         check_live_list()
       
-      global live_config
+      global white_list
       global live_room_id
       global chat_room_id
       if len(live) > 0:
@@ -276,7 +281,7 @@ def check_live_list():
           try:
             item_live_room_id = parse_dict(item, "liveRoomId")
             
-            if item_live_room_id in live_config:
+            if item_live_room_id in white_list:
               if live_room_id != item_live_room_id:
                 is_chat_room_changed = True
                 
@@ -298,7 +303,7 @@ def check_live_list():
             time.sleep(10)
             check_live_list()
         else:
-          Utils.print_with_datetime("[check_live_list: not in live_config]")
+          Utils.print_with_datetime("[check_live_list: not in white_list]")
           time.sleep(10)
           check_live_list()
       else:
