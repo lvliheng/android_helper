@@ -45,7 +45,9 @@ def start():
   else:
     global id
     if id.startswith("im_"):
-      get_imuser_info()
+      get_imuser_info(id)
+    elif id.startswith("1") and len(id) == 11:
+      get_mobileuser_info(id)
     else:
       get_user_info(id)
 
@@ -88,32 +90,35 @@ def get_user_info(id):
   body = {"userId": id}
   response = requests.post(url = url, headers = headers, json = body)
   status_code = response.status_code
+  
   if status_code == 200:
     data = response.json()
     code = data["code"]
+    message = data["message"]
     if code == 200:
       try:
         user_info = data["data"]
         print(user_info)
-      except:
-        Utils.print_with_datetime("[get_user_info: data error]")
+      except Exception as e:
+        Utils.print_with_datetime(f"[get_user_info: {e}]")
     else:
-      Utils.print_with_datetime("[get_user_info: request error]")
+      Utils.print_with_datetime(f"[get_user_info: {message}]", )
 
-def get_imuser_info():
+def get_imuser_info(id):
   global request_config
   user = parse_json(request_config, "imuser")
   url = parse_dict(user, "url")
   global token
   
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
-  global id
   body = [id]
   response = requests.post(url = url, headers = headers, json = body)
   status_code = response.status_code
+  
   if status_code == 200:
     data = response.json()
     code = data["code"]
+    message = data["message"]
     if code == 200:
       try:
         imuser_info = data["data"]
@@ -122,8 +127,32 @@ def get_imuser_info():
       except:
         Utils.print_with_datetime("[get_imuser_info: data error]")
     else:
-      Utils.print_with_datetime("[get_imuser_info: request error]")
+      Utils.print_with_datetime(f"[get_imuser_info: {message}]")
 
+def get_mobileuser_info(id):
+  global request_config
+  user = parse_json(request_config, "mobileuser")
+  url = parse_dict(user, "url")
+  global token
+  
+  headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
+  params = {"mobile": id}
+  response = requests.get(url = url, headers = headers, params=params)
+  status_code = response.status_code
+  
+  if status_code == 200:
+    data = response.json()
+    code = data["code"]
+    message = data["message"]
+    if code == 200:
+      try:
+        mobileuser_info = data["data"]   
+        user_id = mobileuser_info["userId"]
+        get_user_info(user_id)
+      except:
+        Utils.print_with_datetime("[get_mobileuser_info: data error]")
+    else:
+      Utils.print_with_datetime(f"[get_mobileuser_info: {message}]")
 
 def login():
   global request_config

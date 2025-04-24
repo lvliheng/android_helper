@@ -7,6 +7,7 @@ import os
 import argparse
 import random
 import json
+import base64
 
 from utils import Utils
 
@@ -91,6 +92,13 @@ def start():
   last_file_size = -1
   global live_info_file
   live_info_file = "{}{}".format(root, "live_info")
+  
+  global request_config_file
+  request_config_file = "{}{}".format(root, "request_config")
+  check_config_file(request_config_file)
+  request_config_data = open(request_config_file, "r")
+  global request_config
+  request_config = request_config_data.read()
   
   global chat_room_id
   chat_room_id = ""
@@ -286,6 +294,77 @@ def is_app_running():
         return False
   else:
     return False
+
+def check_config_file(file_path):
+  if not Path(file_path).exists():
+    open(file_path, "w")
+
+def decode(encode_value):
+  decode_bytes = base64.b64decode(encode_value.encode("ascii"))
+  return decode_bytes.decode("ascii")
+
+def parse_dict(data, key):
+  try:
+    if type(data) == dict:
+      return data[key]
+    else:
+      return ""
+  except:
+    return ""
+
+def is_logout():
+  return is_logout_tip_dialog_visible() or is_login_page_visible()
+
+def is_logout_tip_dialog_visible():
+  time.sleep(.1)
+  white_pixel = Utils.get_pixel_safely(0, 0)
+  time.sleep(.1)
+  purple_pixel = Utils.get_pixel_safely(0, 0)
+  time.sleep(.1)
+  return white_pixel == (255, 255, 255) and purple_pixel == (183, 89, 195)
+
+def is_login_page_visible():
+  time.sleep(.1)
+  white_pixel = Utils.get_pixel_safely(0, 0)
+  time.sleep(.1)
+  purple_pixel = Utils.get_pixel_safely(0, 0)
+  time.sleep(.1)
+  return white_pixel == (255, 255, 255) and purple_pixel == (183, 89, 195)
+
+def click_dismiss_logout_tip_dialog():
+  Utils.click_safely(0, 0)
+
+def login():
+  click_login_with_password()
+  global request_config
+  account = decode(parse_dict(login, "account"))
+  password = decode(parse_dict(login, "password"))
+  time.sleep(1)
+  click_account_input()
+  time.sleep(.1)
+  write_content(account)
+  time.sleep(.1)
+  click_password_input()
+  time.sleep(.1)
+  write_content(password)
+  time.sleep(.1)
+  click_login()
+  time.sleep(10)
+  
+def click_login_with_password():
+  Utils.click_safely(0, 0)
+
+def click_account_input():
+  Utils.click_safely(0, 0)
+  
+def write_content(content):
+  Utils.write_safely(str(content), "")
+  
+def click_password_input():
+  Utils.click_safely(0, 0)
+  
+def click_login():
+  Utils.click_safely(0, 0)
 
 def refresh():
   Utils.print_with_datetime("refresh")
