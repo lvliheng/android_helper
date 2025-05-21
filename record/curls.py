@@ -4,6 +4,7 @@ import argparse
 import json
 import requests
 import base64
+import clipboard
 
 from utils import Utils
 
@@ -68,6 +69,15 @@ def request(token):
   global method
   global data
   
+  if data == "":
+    if method == "":
+      command = f"curl --location '{base}{path}' --header 'Content-Type: application/json' --header 'Authorization: Bearer {token}'"
+    else:
+      command = f"curl --request POST --location '{base}{path}' --header 'Content-Type: application/json' --header 'Authorization: Bearer {token}'"
+  else:
+    command = f"curl --location '{base}{path}' --header 'Content-Type: application/json' --header 'Authorization: Bearer {token}' --data '{data}'"
+  print(command)
+  
   url = f"{base}{path}"
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   
@@ -87,7 +97,9 @@ def request(token):
   
   if status_code == 200:
     result = response.json()
-    print(result)
+    json_result = json.dumps(result, indent = 4, ensure_ascii = False)
+    print(json_result)
+    clipboard.copy(json_result)
   else:
     print(status_code)
 
