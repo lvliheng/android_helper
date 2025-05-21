@@ -98,7 +98,8 @@ def get_user_info(id):
     if code == 200:
       try:
         user_info = data["data"]
-        print(user_info)
+        json_result = json.dumps(user_info, ensure_ascii = False)
+        print(json_result)
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_info: {e}]")
     else:
