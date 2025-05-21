@@ -35,7 +35,7 @@ def init():
     keyword_header = ""
 
   global stream_refresh_hour
-  stream_refresh_hour = 1
+  stream_refresh_hour = 2
   global stream_duration_minute
   stream_duration_minute = 30
 

@@ -9,15 +9,29 @@ from utils import Utils
 
 def init():  
   parser = argparse.ArgumentParser()
-  parser.add_argument("-i", "--id", help = "user id")
+  parser.add_argument("-p", "--path", help = "path")
+  parser.add_argument("-m", "--method", required = False, help = "method")
+  parser.add_argument("-d", "--data", required = False, help = "data")
 
   args = parser.parse_args()
-  
-  global id
-  if args.id != None:
-    id = args.id
+    
+  global path
+  if args.path != None:
+    path = args.path
   else:
-    id = ""
+    path = ""
+  
+  global method
+  if args.method != None:
+    method = args.method
+  else:
+    method = ""
+  
+  global data
+  if args.data != None:
+    data = args.data
+  else:
+    data = ""
   
   start()
 
@@ -38,18 +52,44 @@ def start():
   init_config()
   time.sleep(.1)
   
+  global base
+  base = parse_json(request_config, "base")
+  
   global token
   token = get_token()
   if token == "":
     login()
-  else:
-    global id
-    if id.startswith("im_"):
-      get_imuser_info(id)
-    elif id.startswith("1") and len(id) == 11:
-      get_mobileuser_info(id)
+  else:      
+    request(token)
+
+def request(token):
+  global base
+  global path
+  global method
+  global data
+  
+  url = f"{base}{path}"
+  headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
+  
+  if data == "":
+    if method == "":
+      response = requests.get(url = url, headers = headers)
     else:
-      get_user_info(id)
+      response = requests.post(url = url, headers = headers)
+  else:
+    json_data = json.loads(data)
+    if method == "get":
+      response = requests.get(url = url, headers = headers, params = json_data)
+    else:
+      response = requests.post(url = url, headers = headers, json = json_data)
+    
+  status_code = response.status_code
+  
+  if status_code == 200:
+    result = response.json()
+    print(result)
+  else:
+    print(status_code)
 
 def check_config_file(file_path):
   if not Path(file_path).exists():
@@ -80,80 +120,6 @@ def parse_dict(data, key):
   except:
     return ""
 
-def get_user_info(id):
-  global request_config
-  user = parse_json(request_config, "user")
-  url = parse_dict(user, "url")
-  global token
-  
-  headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}  
-  body = {"userId": id}
-  response = requests.post(url = url, headers = headers, json = body)
-  status_code = response.status_code
-  
-  if status_code == 200:
-    data = response.json()
-    code = data["code"]
-    message = data["message"]
-    if code == 200:
-      try:
-        user_info = data["data"]
-        print(user_info)
-      except Exception as e:
-        Utils.print_with_datetime(f"[get_user_info: {e}]")
-    else:
-      Utils.print_with_datetime(f"[get_user_info: {message}]", )
-
-def get_imuser_info(id):
-  global request_config
-  user = parse_json(request_config, "imuser")
-  url = parse_dict(user, "url")
-  global token
-  
-  headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
-  body = [id]
-  response = requests.post(url = url, headers = headers, json = body)
-  status_code = response.status_code
-  
-  if status_code == 200:
-    data = response.json()
-    code = data["code"]
-    message = data["message"]
-    if code == 200:
-      try:
-        imuser_info = data["data"]
-        user_id = imuser_info[0]["userId"]
-        get_user_info(user_id)
-      except:
-        Utils.print_with_datetime("[get_imuser_info: data error]")
-    else:
-      Utils.print_with_datetime(f"[get_imuser_info: {message}]")
-
-def get_mobileuser_info(id):
-  global request_config
-  user = parse_json(request_config, "mobileuser")
-  url = parse_dict(user, "url")
-  global token
-  
-  headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
-  params = {"mobile": id}
-  response = requests.get(url = url, headers = headers, params = params)
-  status_code = response.status_code
-  
-  if status_code == 200:
-    data = response.json()
-    code = data["code"]
-    message = data["message"]
-    if code == 200:
-      try:
-        mobileuser_info = data["data"]   
-        user_id = mobileuser_info["userId"]
-        get_user_info(user_id)
-      except:
-        Utils.print_with_datetime("[get_mobileuser_info: data error]")
-    else:
-      Utils.print_with_datetime(f"[get_mobileuser_info: {message}]")
-
 def login():
   global request_config
   login = parse_json(request_config, "login")
@@ -175,8 +141,7 @@ def login():
         token = data["data"]["access_token"]
         if token != "":
           set_token()
-          global id
-          get_user_info(id)
+          request(token)
       except:
         Utils.print_with_datetime("[login: data error]")
     else:
