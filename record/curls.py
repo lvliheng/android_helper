@@ -13,6 +13,7 @@ def init():
   parser.add_argument("-p", "--path", help = "path")
   parser.add_argument("-m", "--method", required = False, help = "method")
   parser.add_argument("-d", "--data", required = False, help = "data")
+  parser.add_argument("-f", "--format", required = False, help = "format")
 
   args = parser.parse_args()
     
@@ -33,6 +34,12 @@ def init():
     data = args.data
   else:
     data = ""
+    
+  global format
+  if args.format != None:
+    format = args.format
+  else:
+    format = ""
   
   start()
 
@@ -69,8 +76,8 @@ def request(token):
   global method
   global data
   
-  if data == "":
-    if method == "":
+  if is_empty(data):
+    if is_empty(method):
       command = f"curl --location '{base}{path}' --header 'Content-Type: application/json' --header 'Authorization: Bearer {token}'"
     else:
       command = f"curl --request POST --location '{base}{path}' --header 'Content-Type: application/json' --header 'Authorization: Bearer {token}'"
@@ -81,14 +88,14 @@ def request(token):
   url = f"{base}{path}"
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   
-  if data == "":
-    if method == "":
+  if is_empty(data):
+    if is_empty(method):
       response = requests.get(url = url, headers = headers)
     else:
       response = requests.post(url = url, headers = headers)
   else:
     json_data = json.loads(data)
-    if method == "get":
+    if method == "get" or method == "GET":
       response = requests.get(url = url, headers = headers, params = json_data)
     else:
       response = requests.post(url = url, headers = headers, json = json_data)
@@ -97,11 +104,19 @@ def request(token):
   
   if status_code == 200:
     result = response.json()
-    json_result = json.dumps(result, indent = 4, ensure_ascii = False)
+    data = result["data"]
+    global format
+    if format == "-1":
+      json_result = json.dumps(data, ensure_ascii = False)
+    else:
+      json_result = json.dumps(data, indent = 4, ensure_ascii = False)
     print(json_result)
     clipboard.copy(json_result)
   else:
     print(status_code)
+
+def is_empty(data):
+  return data == "" or data == "-1"
 
 def check_config_file(file_path):
   if not Path(file_path).exists():
