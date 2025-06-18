@@ -54,6 +54,17 @@ def write_safely(content, key):
     return True
   except:
     return False
+  
+def write_with_interval_safely(content, key):
+  try:
+    pyautogui.write(content, interval = 0.1)
+    time.sleep(.1)
+    if not key == "":
+      pyautogui.press(key)
+    return True
+  except:
+    return False
+
 
 def get_pixel_safely(x, y):
   try:

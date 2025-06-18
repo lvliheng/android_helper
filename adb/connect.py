@@ -2,7 +2,7 @@ import os
 import argparse
 
 def start(device):
-  scrcpy = "scrcpy -s {} -Sw --always-on-top --power-off-on-close".format(device)
+  scrcpy = "scrcpy -s {} -Sw --always-on-top --power-off-on-close --window-x=1467 --window-y=60".format(device)
   os.system(scrcpy)
 
 def checkDevices(selectedDevice):

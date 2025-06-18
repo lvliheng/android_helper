@@ -250,4 +250,5 @@ if __name__=="__main__":
   # test_keyboard_listener()
   # test_create_file()
   # test_base64()
-  websockets_start()
+  # websockets_start()
+  get_pixel(372, 555)

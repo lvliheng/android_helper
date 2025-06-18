@@ -211,33 +211,41 @@ def check_stream_state():
       start()
       break
     else:
-      if is_stream_start():
-        start_record()
-        break
-      elif is_stream_end():
-        stop_record()
+      if is_logout():
+        Utils.print_with_datetime('-logout')
+        if is_logout_tip_dialog_visible():
+          click_dismiss_logout_tip_dialog()
+        time.sleep(1)
+        if is_login_page_visible():
+          login()
+      else:
+        if is_stream_start():
+          start_record()
+          break
+        elif is_stream_end():
+          stop_record()
 
-        if is_after_stream_dead_line():
-          break
-        else:
-          time.sleep(13)
-          refresh()
-          time.sleep(7)
-      elif is_stream_empty():
-        if is_after_stream_dead_line():
-          break
-        else:
-          time.sleep(3)
-          refresh()
-          time.sleep(3)
-          if is_stream_start():
-            start_record()
+          if is_after_stream_dead_line():
             break
           else:
-            time.sleep(7) 
-      else:
-        time.sleep(1)
-        check_file()
+            time.sleep(13)
+            refresh()
+            time.sleep(7)
+        elif is_stream_empty():
+          if is_after_stream_dead_line():
+            break
+          else:
+            time.sleep(3)
+            refresh()
+            time.sleep(3)
+            if is_stream_start():
+              start_record()
+              break
+            else:
+              time.sleep(7) 
+        else:
+          time.sleep(1)
+          check_file()
 
 def is_player_error():
   time.sleep(.1)
@@ -272,7 +280,7 @@ def is_stream_start():
 
 def is_stream_end():
   time.sleep(.1)
-  white_pixel = Utils.get_pixel_safely(300, 620)
+  white_pixel = Utils.get_pixel_safely(495, 563)
   time.sleep(.1)
   purple_pixel = Utils.get_pixel_safely(330, 620)
   time.sleep(.1)
@@ -317,54 +325,64 @@ def is_logout():
 
 def is_logout_tip_dialog_visible():
   time.sleep(.1)
-  white_pixel = Utils.get_pixel_safely(0, 0)
+  purple_text_pixel = Utils.get_pixel_safely(372, 555)
   time.sleep(.1)
-  purple_pixel = Utils.get_pixel_safely(0, 0)
+  purple_pixel = Utils.get_pixel_safely(405, 628)
   time.sleep(.1)
-  return white_pixel == (255, 255, 255) and purple_pixel == (183, 89, 195)
+  return purple_text_pixel == (185, 94, 197) and purple_pixel == (183, 89, 195)
 
 def is_login_page_visible():
   time.sleep(.1)
-  white_pixel = Utils.get_pixel_safely(0, 0)
+  white_pixel = Utils.get_pixel_safely(246, 474)
   time.sleep(.1)
-  purple_pixel = Utils.get_pixel_safely(0, 0)
+  password_button_pixel = Utils.get_pixel_safely(417, 760)
   time.sleep(.1)
-  return white_pixel == (255, 255, 255) and purple_pixel == (183, 89, 195)
+  return white_pixel == (254, 254, 254) and password_button_pixel == (30, 37, 53)
 
 def click_dismiss_logout_tip_dialog():
-  Utils.click_safely(0, 0)
+  Utils.click_safely(405, 628)
 
 def login():
   click_login_with_password()
   global request_config
-  account = decode(parse_dict(login, "account"))
-  password = decode(parse_dict(login, "password"))
+  login_json = parse_json(request_config, "login")
+  account = decode(parse_dict(login_json, "account"))
+  password = decode(parse_dict(login_json, "password"))
   time.sleep(1)
   click_account_input()
-  time.sleep(.1)
-  write_content(account)
-  time.sleep(.1)
+  time.sleep(1)
+  write_content_with_interval(account)
+  time.sleep(1)
   click_password_input()
-  time.sleep(.1)
-  write_content(password)
-  time.sleep(.1)
+  time.sleep(1)
+  write_content_with_interval(password)
+  time.sleep(1)
   click_login()
+  time.sleep(1)
+  click_grant()
   time.sleep(10)
+  check_app()
   
 def click_login_with_password():
-  Utils.click_safely(0, 0)
+  Utils.click_safely(417, 760)
 
 def click_account_input():
-  Utils.click_safely(0, 0)
+  Utils.click_safely(372, 445)
   
 def write_content(content):
   Utils.write_safely(str(content), "")
-  
+
+def write_content_with_interval(content):
+  Utils.write_with_interval_safely(str(content), "")
+ 
 def click_password_input():
-  Utils.click_safely(0, 0)
+  Utils.click_safely(327, 589)
   
 def click_login():
-  Utils.click_safely(0, 0)
+  Utils.click_safely(408, 760)
+
+def click_grant():
+  Utils.click_safely(515, 672)
 
 def refresh():
   Utils.print_with_datetime("refresh")
