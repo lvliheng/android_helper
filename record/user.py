@@ -102,6 +102,8 @@ def get_user_info(id):
         print(json_result)
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_info: {e}]")
+    elif code == 301:
+      login()
     else:
       Utils.print_with_datetime(f"[get_user_info: {message}]", )
 
@@ -127,6 +129,8 @@ def get_imuser_info(id):
         get_user_info(user_id)
       except:
         Utils.print_with_datetime("[get_imuser_info: data error]")
+    elif code == 301:
+      login()
     else:
       Utils.print_with_datetime(f"[get_imuser_info: {message}]")
 
@@ -152,6 +156,8 @@ def get_mobileuser_info(id):
         get_user_info(user_id)
       except:
         Utils.print_with_datetime("[get_mobileuser_info: data error]")
+    elif code == 301:
+      login()
     else:
       Utils.print_with_datetime(f"[get_mobileuser_info: {message}]")
 
