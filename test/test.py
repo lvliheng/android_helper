@@ -192,6 +192,7 @@ def on_press(key):
 def get_pixel(x, y):
   pixel = pyautogui.pixel(x, y)
   print("({}, {}) : {}".format(x, y, pixel))
+  print("pixel's type:", type(pixel))
 
 def get_position():
   x, y = pyautogui.position()

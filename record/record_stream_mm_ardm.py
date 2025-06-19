@@ -333,11 +333,11 @@ def is_logout_tip_dialog_visible():
 
 def is_login_page_visible():
   time.sleep(.1)
-  white_pixel = Utils.get_pixel_safely(246, 474)
+  is_white_match = Utils.is_pixel_match_color_safely(246, 474, (254, 254, 254))
   time.sleep(.1)
-  password_button_pixel = Utils.get_pixel_safely(417, 760)
+  is_password_button_match = Utils.is_pixel_match_color_safely(417, 760, (30, 37, 53))
   time.sleep(.1)
-  return white_pixel == (254, 254, 254) and password_button_pixel == (30, 37, 53)
+  return is_white_match and is_password_button_match
 
 def click_dismiss_logout_tip_dialog():
   Utils.click_safely(405, 628)

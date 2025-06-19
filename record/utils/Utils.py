@@ -65,16 +65,24 @@ def write_with_interval_safely(content, key):
   except:
     return False
 
-
 def get_pixel_safely(x, y):
   try:
     pixel = pyautogui.pixel(x, y)
     return pixel
   except Exception as e:
-    print_with_datetime("get pixel: error:\n{}".format(e))
+    print_with_datetime("pixel: error:\n{}".format(e))
     time.sleep(1)
     get_pixel_safely(x, y)
-   
+
+def is_pixel_match_color_safely(x, y, color):
+  try:
+    pixel = pyautogui.pixelMatchesColor(x, y, color, tolerance = 10)
+    return pixel
+  except Exception as e:
+    print_with_datetime("pixelMatchesColor: error:\n{}".format(e))
+    time.sleep(1)
+    is_pixel_match_color_safely(x, y, color)
+      
 
 def print_with_datetime(text):
   print(datetime.now(), text)
