@@ -21,6 +21,16 @@ def click_safely(x, y):
   except:
     time.sleep(1)
     click_safely(x, y)
+    
+def double_click_safely(x, y):
+  try:
+    pyautogui.moveTo(x, y)
+    time.sleep(.1)
+    pyautogui.click(clicks = 2, interval = 0.25)
+  except:
+    time.sleep(1)
+    double_click_safely(x, y)
+
 
 def drag_to_safely(from_x, from_y, to_x, to_y):
   try:

@@ -355,9 +355,9 @@ def login():
   time.sleep(1)
   write_content_with_interval(password)
   time.sleep(1)
-  click_login()
+  click_check_box()
   time.sleep(1)
-  click_grant()
+  click_login()
   time.sleep(10)
   check_app()
   
@@ -365,7 +365,7 @@ def click_login_with_password():
   Utils.click_safely(417, 760)
 
 def click_account_input():
-  Utils.click_safely(372, 445)
+  Utils.double_click_safely(341, 447)
   
 def write_content(content):
   Utils.write_safely(str(content), "")
@@ -374,13 +374,14 @@ def write_content_with_interval(content):
   Utils.write_with_interval_safely(str(content), "")
  
 def click_password_input():
-  Utils.click_safely(327, 589)
+  Utils.double_click_safely(248, 592)
   
 def click_login():
   Utils.click_safely(408, 760)
 
-def click_grant():
-  Utils.click_safely(515, 672)
+def click_check_box():
+  if not Utils.is_pixel_match_color_safely(303, 672, (38, 221, 105)):
+    Utils.click_safely(303, 672)
 
 def refresh():
   Utils.print_with_datetime("refresh")
