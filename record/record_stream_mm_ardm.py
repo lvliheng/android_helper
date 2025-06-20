@@ -83,18 +83,16 @@ def start():
   today = "{}-{}-{}".format(current_time.strftime("%Y"), current_time.strftime("%m"), current_time.strftime("%d"))
   today_millis = "{}-{}".format(today, current_time.strftime("%f"))
 
-  global root
-  root = "D:\\_temp\\stream\\"
   global directory
-  directory = "{}{}".format(root, today)
+  directory = today
   Path(directory).mkdir(parents = True, exist_ok = True)
   global last_file_size
   last_file_size = -1
   global live_info_file
-  live_info_file = "{}{}".format(root, "live_info")
+  live_info_file = "live_info"
   
   global request_config_file
-  request_config_file = "{}{}".format(root, "request_config")
+  request_config_file = "request_config"
   check_config_file(request_config_file)
   request_config_data = open(request_config_file, "r")
   global request_config

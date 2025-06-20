@@ -44,14 +44,11 @@ def init():
   start()
 
 def start():
-  global root
-  root = ""
-  Path(root).mkdir(parents = True, exist_ok = True)
   global request_config_file
-  request_config_file = "{}{}".format(root, "request_config")
+  request_config_file = "request_config"
   check_config_file(request_config_file)
   global token_file
-  token_file = "{}{}".format(root, "token")
+  token_file = "token"
   check_config_file(token_file)
   
   global request_config

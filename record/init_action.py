@@ -11,11 +11,8 @@ def init():
   global result
   result = "#{}".format(action_list[current_index])
   
-  global root
-  root = "D:\\_temp\\stream\\"
-  Path(root).mkdir(parents = True, exist_ok = True)
   global action_config_file
-  action_config_file = "{}{}".format(root, "action_config")
+  action_config_file = "action_config"
   if not Path(action_config_file).exists():
     open(action_config_file, "w")
   

@@ -85,20 +85,17 @@ def start():
 
   today = "{}-{}-{}".format(current_time.strftime("%Y"), current_time.strftime("%m"), current_time.strftime("%d"))
 
-  global root
-  root = ""
-  Path(root).mkdir(parents = True, exist_ok = True)
   global live_config_file
-  live_config_file = "{}{}".format(root, "live_config")
+  live_config_file = "live_config"
   check_config_file(live_config_file)
   global request_config_file
-  request_config_file = "{}{}".format(root, "request_config")
+  request_config_file = "request_config"
   check_config_file(request_config_file)
   global action_config_file
-  action_config_file = "{}{}".format(root, "action_config")
+  action_config_file = "action_config"
   check_config_file(action_config_file)
   global token_file
-  token_file = "{}{}".format(root, "token")
+  token_file = "token"
   check_config_file(token_file)
   
   global live_config
