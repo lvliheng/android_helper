@@ -7,11 +7,10 @@ def init():
   global today
   today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
 
-  root = "D:\_temp\stream\\"
   global record_directory
   global stream_directory
-  record_directory = "{}ScreenRecords".format(root)
-  stream_directory = "{}{}".format(root, today)
+  record_directory = "ScreenRecords"
+  stream_directory = today
   Path(stream_directory).mkdir(parents = True, exist_ok = True)
 
   check_file_record()
