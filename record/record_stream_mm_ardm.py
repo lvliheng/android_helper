@@ -278,9 +278,9 @@ def is_stream_start():
 
 def is_stream_end():
   time.sleep(.1)
-  white_pixel = Utils.get_pixel_safely(495, 563)
+  white_pixel = Utils.get_pixel_safely(480, 590)
   time.sleep(.1)
-  purple_pixel = Utils.get_pixel_safely(330, 620)
+  purple_pixel = Utils.get_pixel_safely(480, 600)
   time.sleep(.1)
   return white_pixel == (255, 255, 255) and purple_pixel == (183, 89, 195)
 
@@ -319,15 +319,7 @@ def parse_dict(data, key):
     return ""
 
 def is_logout():
-  return is_logout_tip_dialog_visible() or is_login_page_visible()
-
-def is_logout_tip_dialog_visible():
-  time.sleep(.1)
-  purple_text_pixel = Utils.get_pixel_safely(372, 555)
-  time.sleep(.1)
-  purple_pixel = Utils.get_pixel_safely(405, 628)
-  time.sleep(.1)
-  return purple_text_pixel == (185, 94, 197) and purple_pixel == (183, 89, 195)
+  return is_login_page_visible()
 
 def is_login_page_visible():
   time.sleep(.1)
