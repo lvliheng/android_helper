@@ -45,8 +45,8 @@ def start():
   global page_num
   global page_from
   page_num = string_to_int(page_from)
-  if page_num < 0:
-    page_num = 0
+  if page_num < 1:
+    page_num = 1
     
   global page_max
   global page_to
@@ -103,7 +103,6 @@ def get_user_list():
   
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   global page_num
-  page_num += 1
   global page_size
   body = {"pageNum": page_num, "pageSize": page_size}
   response = requests.post(url = url, headers = headers, json = body)
@@ -117,31 +116,33 @@ def get_user_list():
       try:
         user_list = data["data"]
         global page_max
-        print(page_num, "/", page_max)
+        print(f"{page_num}/{page_max}")
         
         for user in user_list:
+          if user["state"] != 1:
+            continue
+          
           if user["nickName"].endswith(" "):
-            list.append(user)
+            list.append(user["id"])
           elif user["parentMobile"] == None:
-            list.append(user)
+            list.append(user["id"])
             
         if page_num < page_max:
           time.sleep(1)
+          page_num += 1
           get_user_list()
         else:
-          if len(list) == 0:
-            print("--end")
-          else:
-            print(len(list), "results found.")
-            for user in list:
+          if len(list) > 0:
+            for id in list:
               time.sleep(1)
-              get_user_info(user["id"])
+              get_user_info(id)
+          print(len(list), "results found.")
       except Exception as e:
-        Utils.print_with_datetime(f"[get_user_info: {e}]")
+        Utils.print_with_datetime(f"[get_user_list: error: {e}]")
     elif code == 301:
       login()
     else:
-      Utils.print_with_datetime(f"[get_user_info: {message}]", )
+      Utils.print_with_datetime(f"[get_user_list: fail: {message}]", )
 
 def get_user_info(id):
   global request_config
@@ -164,11 +165,11 @@ def get_user_info(id):
         real_name = user_info['realName'] or "未实名"
         print(f"{user_info['nickName']}  {real_name}  {user_info['mobile']}  {user_info['userId']}  {user_info['imId']}  {user_info['gmtCreate']}")
       except Exception as e:
-        Utils.print_with_datetime(f"[get_user_info: {e}]")
+        Utils.print_with_datetime(f"[get_user_info: error: {e}]")
     elif code == 301:
       login()
     else:
-      Utils.print_with_datetime(f"[get_user_info: {message}]", )
+      Utils.print_with_datetime(f"[get_user_info: fail: {message}]", )
 
 def login():
   global request_config

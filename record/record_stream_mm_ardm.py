@@ -209,13 +209,9 @@ def check_stream_state():
       start()
       break
     else:
-      if is_logout():
+      if is_login_page_visible():
         Utils.print_with_datetime('-logout')
-        if is_logout_tip_dialog_visible():
-          click_dismiss_logout_tip_dialog()
-        time.sleep(1)
-        if is_login_page_visible():
-          login()
+        login()
       else:
         if is_stream_start():
           start_record()
@@ -317,10 +313,7 @@ def parse_dict(data, key):
       return ""
   except:
     return ""
-
-def is_logout():
-  return is_login_page_visible()
-
+  
 def is_login_page_visible():
   time.sleep(.1)
   is_white_match = Utils.is_pixel_match_color_safely(246, 474, (254, 254, 254))
