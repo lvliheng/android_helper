@@ -59,6 +59,11 @@ def start():
   global list
   list = []
   
+  global start
+  start = ""
+  global end
+  end = ""
+  
   global token
   token = get_token()
   if token == "":
@@ -118,13 +123,24 @@ def get_user_list():
         global page_max
         print(f"{page_num}/{page_max}")
         
+        global start
+        global end
         for user in user_list:
+          if end == "":
+            end = user["gmtCreate"]
+          start = user["gmtCreate"]
+          
           if user["state"] != 1:
             continue
           
           if user["nickName"].endswith(" "):
+            print("    ", f"{user['nickName']}_", " :: ", user["deviceId"], " :: ", user["parentMobile"])
+            list.append(user["id"])
+          elif user["deviceId"] == '3b36ce2650173adeebc6565d9a139c5b':
+            print("    ", f"{user['nickName']}", " :: ", user["deviceId"], " :: ", user["parentMobile"])
             list.append(user["id"])
           elif user["parentMobile"] == None:
+            print("    ", f"{user['nickName']}", " :: ", user["deviceId"], " :: ", user["parentMobile"])
             list.append(user["id"])
             
         if page_num < page_max:
@@ -136,7 +152,7 @@ def get_user_list():
             for id in list:
               time.sleep(1)
               get_user_info(id)
-          print(len(list), "results found.")
+          print(len(list), "results found.", start, "~", end)
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_list: error: {e}]")
     elif code == 301:
