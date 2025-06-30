@@ -148,11 +148,11 @@ def get_user_list():
           page_num += 1
           get_user_list()
         else:
+          print(len(list), "results found.", start, "~", end)
           if len(list) > 0:
             for id in list:
               time.sleep(1)
               get_user_info(id)
-          print(len(list), "results found.", start, "~", end)
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_list: error: {e}]")
     elif code == 301:
