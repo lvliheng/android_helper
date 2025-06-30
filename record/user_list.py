@@ -11,6 +11,7 @@ def init():
   parser = argparse.ArgumentParser()
   parser.add_argument("-f", "--pagef", help = "page from")
   parser.add_argument("-t", "--paget", help = "page to")
+  parser.add_argument("-n", "--name", help = "nickname")
 
   args = parser.parse_args()
   
@@ -25,6 +26,14 @@ def init():
     page_to = args.paget
   else:
     page_to = ""
+    
+  global nick_name
+  if args.name != None:
+    nick_name = args.name
+  else:
+    nick_name = ""
+  if nick_name == "-1":
+    nick_name = ""
     
   start()
 
@@ -109,7 +118,8 @@ def get_user_list():
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   global page_num
   global page_size
-  body = {"pageNum": page_num, "pageSize": page_size}
+  global nick_name
+  body = {"pageNum": page_num, "pageSize": page_size, "nickName": nick_name}
   response = requests.post(url = url, headers = headers, json = body)
   status_code = response.status_code
   
@@ -120,39 +130,52 @@ def get_user_list():
     if code == 200:
       try:
         user_list = data["data"]
-        global page_max
-        print(f"{page_num}/{page_max}")
         
-        global start
-        global end
-        for user in user_list:
-          if end == "":
-            end = user["gmtCreate"]
-          start = user["gmtCreate"]
+        if nick_name == "":
+          global page_max
+          print(f"{page_num}/{page_max}")
           
-          if user["state"] != 1:
-            continue
-          
-          if user["nickName"].endswith(" "):
-            print("    ", f"{user['nickName']}_", " :: ", user["deviceId"], " :: ", user["parentMobile"])
-            list.append(user["id"])
-          elif user["deviceId"] == '3b36ce2650173adeebc6565d9a139c5b':
-            print("    ", f"{user['nickName']}", " :: ", user["deviceId"], " :: ", user["parentMobile"])
-            list.append(user["id"])
-          elif user["parentMobile"] == None:
-            print("    ", f"{user['nickName']}", " :: ", user["deviceId"], " :: ", user["parentMobile"])
-            list.append(user["id"])
+          global start
+          global end
+          for user in user_list:
+            if end == "":
+              end = user["gmtCreate"]
+            start = user["gmtCreate"]
             
-        if page_num < page_max:
-          time.sleep(1)
-          page_num += 1
-          get_user_list()
+            if user["state"] != 1:
+              continue
+            
+            if user["nickName"].endswith(" "):
+              print("    ", f"{user['nickName']}_", " :: ", user["deviceId"], " :: ", user["parentMobile"])
+              list.append(user["id"])
+            elif user["deviceId"] == '3b36ce2650173adeebc6565d9a139c5b':
+              print("    ", f"{user['nickName']}", " :: ", user["deviceId"], " :: ", user["parentMobile"])
+              list.append(user["id"])
+            elif user["parentMobile"] == None:
+              print("    ", f"{user['nickName']}", " :: ", user["deviceId"], " :: ", user["parentMobile"])
+              list.append(user["id"])
+              
+          if page_num < page_max:
+            time.sleep(1)
+            page_num += 1
+            get_user_list()
+          else:
+            if len(list) > 0:
+              print(f"------------{start}~{end}------------")
+              for id in list:
+                time.sleep(1)
+                get_user_info(id)
+            else:
+              print(f"------------{start}~{end}------------")
+            print(len(list), "results found.")
         else:
-          print(len(list), "results found.", start, "~", end)
-          if len(list) > 0:
-            for id in list:
-              time.sleep(1)
-              get_user_info(id)
+          index = 0
+          for user in user_list:
+            index += 1
+            json_result = json.dumps(user, ensure_ascii = False)
+            print(index, json_result)
+            print()
+          print(len(user_list), "results found.")
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_list: error: {e}]")
     elif code == 301:
