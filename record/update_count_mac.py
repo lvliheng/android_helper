@@ -96,8 +96,6 @@ def start():
   live_room_id = ""
   global chat_room_id
   chat_room_id = ""
-  global stream_url
-  stream_url = ""
 
   print(f"------------{today}------------")
   init_action_config()
@@ -168,21 +166,13 @@ def parse_dict(data, key):
 
 def check_state():
   while True:    
-    if is_after_stream_dead_line():
-      if not is_chat_room_valid():
-        break
-    else:
-      if is_chat_room_valid():
-        time.sleep(.1)
-        click_window_top()
-        time.sleep(.1)
-        if is_list_open():
-          update_count()
-      
-      result = check_live_list()
-      if result == -1:
-        login()
-        break
+    global chat_room_id
+    if chat_room_id != "":
+      update_count()
+    result = check_live_list()
+    if result == -1:
+      login()
+      break
 
 def is_after_stream_dead_line():
   global stream_dead_line
@@ -269,6 +259,13 @@ def check_live_list():
                 
               live_room_id = item_live_room_id
               chat_room_id = parse_dict(item, "chatRoomId")
+
+              stream_url = parse_dict(item, "rtmpLiveUrl")
+              record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}-stream.mp4".format(stream_url, datetime.now())
+              print(record_stream_command)
+              global keyword_header
+              search_key_word = "{}{}".format(keyword_header, chat_room_id)
+              print(search_key_word)
               break
             else:
               Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
@@ -283,6 +280,8 @@ def check_live_list():
             Utils.print_with_datetime("[check_live_list: chat room id error]")
             time.sleep(10)
             check_live_list()
+        else:
+          time.sleep(10)
       else:
         Utils.print_with_datetime("[check_live_list: live list empty]")
         reset_ids()
@@ -307,7 +306,6 @@ def start_update():
   stream_dead_line = datetime.now() + timedelta(minutes = stream_duration_minute)
   
   init_count()
-  setup_list()
 
 def init_count():
   global last_time
@@ -323,93 +321,6 @@ def init_count():
     random_count = random.randint(-30 * 1000, 30 * 1000)
     max_count = 220 * 1000 + random_count
 
-def setup_list():
-  global last_count
-  last_count = 0
-
-  if not is_list_open():
-    toogle_list()
-    time.sleep(2)
-
-  if is_list_open():    
-    global chat_room_id
-    if string_to_int(chat_room_id) == 0:
-      time.sleep(10)
-    else:
-      check_id(chat_room_id)
-  else:
-    time.sleep(2)
-
-def check_id(id):
-  click_input_box()
-
-  search(id)
-  time.sleep(3)
-
-  if is_chat_room_exists():
-    click_selected_item()
-    
-    time.sleep(.1)
-    if not is_chat_room_valid():
-      if get_selected_count() == 0:
-        time.sleep(1)
-        return
-      else:
-        Utils.print_with_datetime("[check_id: chat room result ui invalid]")
-        time.sleep(10)
-        check_id(id)
-  else:
-    Utils.print_with_datetime("[check_id: chat room result data invalid]")
-    time.sleep(10)
-    check_id(id) 
-
-def click_selected_item():
-  position = get_action_position("selecte_item")
-  Utils.click_safely(string_to_int(position[0]), string_to_int(position[1]))
-
-def click_input_box():
-  position = get_action_position("search_input_box")
-  Utils.click_safely(string_to_int(position[0]), string_to_int(position[1]))
-
-def search(id):
-  select_all()
-  time.sleep(.1)
-  global keyword_header
-  search_key_word = "{}{}".format(keyword_header, id)
-  if Utils.write_safely(search_key_word, "enter") == False:
-    time.sleep(1)  
-    search(id)
-
-def is_chat_room_exists():
-  move_to_selected_item()
-    
-  time.sleep(.1)
-  position = get_action_position("selecte_item")
-  result_item_pixel = Utils.get_pixel_safely(string_to_int(position[0]), string_to_int(position[1]))
-  time.sleep(.1)
-  # return result_item_pixel == (231, 231, 231)
-  return result_item_pixel == (40, 44, 46)
-
-def move_to_selected_item():
-  position = get_action_position("selecte_item")
-  Utils.move_to_safely(string_to_int(position[0]), string_to_int(position[1]))
-
-def is_chat_room_valid():
-  global chat_room_id
-  
-  time.sleep(.1)
-  position = get_action_position("refresh_button")
-  refresh_button_pixel = Utils.get_pixel_safely(string_to_int(position[0]), string_to_int(position[1]))
-  time.sleep(.1)
-
-  # if chat_room_id != "" and refresh_button_pixel == (103, 194, 58):
-  if chat_room_id != "" and refresh_button_pixel == (27, 48, 65):
-    selected_count = get_selected_count()
-    print("selected_count", selected_count)
-    return selected_count > 0
-  else:
-    False
-
 def get_selected_count():
   click_input()
   time.sleep(.1)
@@ -420,8 +331,6 @@ def get_selected_count():
   select_all()
   time.sleep(.1)
   
-  if not is_list_open():
-    return 0
   copy_selected()
   selected = clipboard.paste()     
   return string_to_int(selected)
@@ -432,22 +341,6 @@ def string_to_int(value):
     return result
   except:
     return 0
-
-def is_list_open():
-  time.sleep(.1)
-  position = get_action_position("load_all")
-  load_all_button_pixel = Utils.get_pixel_safely(string_to_int(position[0]), string_to_int(position[1]))
-  time.sleep(.1)
-  # return load_all_button_pixel == (245, 108, 108)
-  return load_all_button_pixel == (30, 30, 30)
-
-def click_window_top():
-  position = get_action_position("window_top")
-  Utils.click_safely(string_to_int(position[0]), string_to_int(position[1]))
-
-def toogle_list():
-  position = get_action_position("host_title")
-  Utils.click_safely(string_to_int(position[0]), string_to_int(position[1]))
 
 def click_input():
   position = get_action_position("value_input_box")
@@ -469,8 +362,6 @@ def update_count():
   select_all()
   time.sleep(.1)
   
-  if is_list_closed():
-    return
   copy_selected()
 
   try:
@@ -483,18 +374,22 @@ def update_count():
   global last_time
   
   if current_count < 0:
-    setup_list()
-    time.sleep(1)
+    time.sleep(10)
+    return
   elif current_count == 0:
     time.sleep(1)
   elif current_count >= max_count:
-    toogle_list()
-    time.sleep(1)
+    if current_count >= max_count * 1.2:
+      duration = random.randint(20, 24)
+      time.sleep(duration)
+      add = random.randint(0, 100)
+    else:
+      duration = random.randint(16, 20)
+      time.sleep(duration)
+      add = random.randint(0, 400)
   elif current_count - last_count > 3000:
     Utils.print_with_datetime(current_count)
     last_count = current_count
-    if is_list_closed():
-      return
     time.sleep(10)
   else:
     global chat_room_id
@@ -531,23 +426,12 @@ def update_count():
     Utils.write_safely(str(current_count), "")
 
     time.sleep(.1)
-    if is_list_closed():
-      return
     save()
 
     now = round(time.time())
     Utils.print_with_datetime("+{} +{} {}".format(get_string_full_length(now - last_time, 2), get_string_full_length(add, 4), current_count))
     last_time = now
     last_count = current_count 
-
-def is_list_closed():
-  if not is_list_open():
-    time.sleep(1)
-    toogle_list()
-    time.sleep(1)
-    return True
-  else:
-    return False
 
 def get_string_full_length(value_int, max_length):
   return "{:<{}}".format(value_int, max_length)
