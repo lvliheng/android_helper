@@ -69,6 +69,8 @@ def start():
   stream_dead_line = current_time + timedelta(hours = stream_refresh_hour)
 
   today = "{}-{}-{}".format(current_time.strftime("%Y"), current_time.strftime("%m"), current_time.strftime("%d"))
+  global today_millis
+  today_millis = "{}-{}".format(today, current_time.strftime("%f"))
 
   global root
   root = ""
@@ -96,6 +98,9 @@ def start():
   live_room_id = ""
   global chat_room_id
   chat_room_id = ""
+
+  global last_count
+  last_count = 0
 
   print(f"------------{today}------------")
   init_action_config()
@@ -256,16 +261,21 @@ def check_live_list():
             if item_live_room_id in live_config:
               if live_room_id != item_live_room_id:
                 is_chat_room_changed = True
-                
-              live_room_id = item_live_room_id
+              
               chat_room_id = parse_dict(item, "chatRoomId")
 
-              stream_url = parse_dict(item, "rtmpLiveUrl")
-              record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}-stream.mp4".format(stream_url, datetime.now())
-              print(record_stream_command)
-              global keyword_header
-              search_key_word = "{}{}".format(keyword_header, chat_room_id)
-              print(search_key_word)
+              if live_room_id == "":
+                stream_url = parse_dict(item, "rtmpLiveUrl")
+                stream_url = stream_url.replace('artc://', 'rtmp://')
+                global today_millis
+                record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}-stream.mp4".format(stream_url, today_millis)
+                print(record_stream_command)
+                global keyword_header
+                search_key_word = "{}{}".format(keyword_header, chat_room_id)
+                print(search_key_word)
+                time.sleep(10)
+
+              live_room_id = item_live_room_id
               break
             else:
               Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
