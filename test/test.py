@@ -17,8 +17,6 @@ import json
 import requests
 from pynput import keyboard
 import base64
-import win32api
-import win32con
 import ctypes
 
 import asyncio
@@ -241,27 +239,8 @@ async def websockets_echo(websocket):
     print("websockets_echo: message:", message)
     websockets.broadcast(connections, message)
 
-def test_keyboard_layout():
-  keyboard_layout_id = win32api.GetKeyboardLayout(0)
-  hex_id = hex(keyboard_layout_id)
-  print("current id:", hex_id)
-  
-  if hex_id == '0x8040804':
-    change_keyboard_layout('0x4090409')
-  
-def change_keyboard_layout(language_klid_hex):
-    print("change keyboard layout")
-    try:
-        KLF_ACTIVATE = '0x00000001'
-        user32 = ctypes.WinDLL('user32', use_last_error=True)
-        hkl = user32.LoadKeyboardLayoutW(language_klid_hex, KLF_ACTIVATE)
-        user32.ActivateKeyboardLayout(hkl, KLF_ACTIVATE)
-        print(f"Keyboard layout changed to: {language_klid_hex}")
-    except Exception as e:
-        print(f"Error changing keyboard layout: {e}")
-
 if __name__=="__main__":
-  # test()
+  test()
   # test2()
   # test3()
   # test4()
@@ -275,4 +254,3 @@ if __name__=="__main__":
   # test_base64()
   # websockets_start()
   # get_pixel(372, 555)
-  test_keyboard_layout()
