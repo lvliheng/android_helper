@@ -24,6 +24,18 @@ import websockets
 
 def test():
   print("test")
+  
+  while True:
+    time.sleep(3)
+    get_pixel(1360, 606)
+
+def getPixel(x, y):
+  try:
+    pixel = pyautogui.pixel(x, y)
+    print("({}, {}) : {}".format(x, y, pixel))
+  except:
+    print("pixel: error:")
+    time.sleep(3)
 
 def test_exception():
   try:
