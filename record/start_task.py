@@ -1,9 +1,25 @@
+from datetime import datetime
 import time
 
 from utils import Utils
 
 def init(): 
-  print("start_task")
+  start_hour = 19
+  start_minute = 50
+  stream_refresh_hour = 1
+  current_time = datetime.now()
+  start_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour, start_minute)
+  global end_date_time
+  end_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour + stream_refresh_hour, start_minute)
+
+  need_check_time = False
+  if need_check_time:
+    if current_time > start_date_time and current_time < end_date_time:
+      start()
+  else:
+    start()
+    
+def start():
   time.sleep(1)
   Utils.hot_key_safely(["win", "right"])
   time.sleep(1)

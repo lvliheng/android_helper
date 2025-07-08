@@ -35,12 +35,12 @@ def init():
     keyword_header = ""
 
   global stream_refresh_hour
-  stream_refresh_hour = 2
+  stream_refresh_hour = 1
   global stream_duration_minute
   stream_duration_minute = 30
 
   start_hour = 19
-  start_minute = 28
+  start_minute = 50
   
   start_job(start_hour, start_minute)
 
