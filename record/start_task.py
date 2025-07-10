@@ -6,7 +6,7 @@ from utils import Utils
 def init(): 
   start_hour = 19
   start_minute = 50
-  stream_refresh_hour = 1
+  stream_refresh_hour = 2
   current_time = datetime.now()
   start_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour, start_minute)
   global end_date_time
