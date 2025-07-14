@@ -1,5 +1,6 @@
 from datetime import datetime
 import time
+import pygetwindow as gw
 
 from utils import Utils
 
@@ -21,9 +22,15 @@ def init():
     
 def start():
   time.sleep(1)
-  Utils.hot_key_safely(["win", "right"])
-  time.sleep(1)
-  Utils.hot_key_safely(["win", "up"])
+  try:
+    # window = gw.getActiveWindow()
+    window = gw.getWindowsWithTitle("D:\_tools\start_task.bat")[0]
+    window.moveTo(953, 0)
+    window.resizeTo(967, 547)
+  except:
+    Utils.hot_key_safely(["win", "right"])
+    time.sleep(1)
+    Utils.hot_key_safely(["win", "up"])
   time.sleep(1)
   Utils.hot_key_safely(["ctrl", "shift", "t"])
   time.sleep(1)
