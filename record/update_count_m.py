@@ -21,7 +21,7 @@ def init():
   parser.add_argument("-p", "--path", help = "application path")
 
   global temp_chat_room_list
-  temp_chat_room_list = ["181595984166913"]
+  temp_chat_room_list = ["181595984166913", "252565635792910"]
 
   args = parser.parse_args()
   

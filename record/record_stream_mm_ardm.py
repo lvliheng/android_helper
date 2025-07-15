@@ -20,7 +20,7 @@ def init():
   parser.add_argument("-k", "--keyword", help = "keyword header")
 
   global temp_chat_room_list
-  temp_chat_room_list = ["181595984166913"]
+  temp_chat_room_list = ["181595984166913", "252565635792910"]
 
   args = parser.parse_args()
   global app_package
