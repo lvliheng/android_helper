@@ -185,21 +185,13 @@ def parse_dict(data, key):
 
 def check_state():
   while True:    
-    if is_after_stream_dead_line():
-      if not is_chat_room_valid():
-        break
-    else:
-      if is_chat_room_valid():
-        time.sleep(.1)
-        click_window_top()
-        time.sleep(.1)
-        if is_list_open():
-          update_count()
-      
-      result = check_live_list()
-      if result == -1:
-        login()
-        break
+    global chat_room_id
+    if chat_room_id != "":
+      update_count()
+    result = check_live_list()
+    if result == -1:
+      login()
+      break
 
 def is_after_stream_dead_line():
   global stream_dead_line
@@ -282,8 +274,20 @@ def check_live_list():
               if live_room_id != item_live_room_id:
                 is_chat_room_changed = True
                 
-              live_room_id = item_live_room_id
               chat_room_id = parse_dict(item, "chatRoomId")
+
+              if live_room_id == "":
+                stream_url = parse_dict(item, "rtmpLiveUrl")
+                stream_url = stream_url.replace('artc://', 'rtmp://')
+                global today_millis
+                record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}-stream.mp4".format(stream_url, today_millis)
+                print(record_stream_command)
+                global keyword_header
+                search_key_word = "{}{}".format(keyword_header, chat_room_id)
+                print(search_key_word)
+                time.sleep(10)
+
+              live_room_id = item_live_room_id
               break
             else:
               Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))

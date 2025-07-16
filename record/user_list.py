@@ -174,7 +174,6 @@ def get_user_list():
             index += 1
             json_result = json.dumps(user, ensure_ascii = False)
             print(index, json_result)
-            print()
           print(len(user_list), "results found.")
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_list: error: {e}]")
