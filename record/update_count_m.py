@@ -516,9 +516,9 @@ def update_count():
     global chat_room_id
     global temp_chat_room_list
     if chat_room_id in temp_chat_room_list:
-      duration = random.randint(12, 14)
+      duration = random.randint(14, 16)
       time.sleep(duration)
-      add = random.randint(200, 600)
+      add = random.randint(100, 500)
     else:
       if current_count < 10 * 1000:
         add = random.randint(1200, 1600)
