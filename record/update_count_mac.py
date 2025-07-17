@@ -17,9 +17,6 @@ def init():
   parser = argparse.ArgumentParser()
   parser.add_argument("-k", "--keyword", help = "keyword header")
 
-  global temp_chat_room_list
-  temp_chat_room_list = ["181595984166913", "252565635792910"]
-
   args = parser.parse_args()
   
   global keyword_header
@@ -125,6 +122,9 @@ def init_config():
   live_config_data = open(live_config_file, "r")
   global live_config
   live_config = live_config_data.read()
+  separator = ","
+  global temp_chat_room_list
+  temp_chat_room_list = separator.join(parse_json(live_config, "chatRoomList"))
   
   global request_config_file
   request_config_data = open(request_config_file, "r")
@@ -249,7 +249,7 @@ def check_live_list():
         time.sleep(10)
         check_live_list()
       
-      global live_config
+      global temp_chat_room_list
       global live_room_id
       global chat_room_id
       if len(live) > 0:
@@ -257,8 +257,9 @@ def check_live_list():
         for item in live:
           try:
             item_live_room_id = parse_dict(item, "liveRoomId")
+            item_chat_room_id = parse_dict(item, "chatRoomId")
             
-            if item_live_room_id in live_config:
+            if item_live_room_id in temp_chat_room_list:
               if live_room_id != item_live_room_id:
                 is_chat_room_changed = True
               
@@ -278,7 +279,7 @@ def check_live_list():
               live_room_id = item_live_room_id
               break
             else:
-              Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
+              Utils.print_with_datetime("{} :: {} :: {}-{}".format(item_live_room_id, item_chat_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
           except:
             Utils.print_with_datetime("[check_live_list: data error]")
             continue

@@ -20,9 +20,6 @@ def init():
   parser.add_argument("-n", "--name", help = "application name")
   parser.add_argument("-p", "--path", help = "application path")
 
-  global temp_chat_room_list
-  temp_chat_room_list = ["181595984166913", "252565635792910"]
-
   args = parser.parse_args()
   
   global keyword_header
@@ -139,6 +136,8 @@ def init_config():
   separator = ","
   global white_list
   white_list = separator.join(parse_json(live_config, "whiteList"))
+  global temp_chat_room_list
+  temp_chat_room_list = separator.join(parse_json(live_config, "chatRoomList"))
   
   global request_config_file
   request_config_data = open(request_config_file, "r")
@@ -269,12 +268,13 @@ def check_live_list():
         for item in live:
           try:
             item_live_room_id = parse_dict(item, "liveRoomId")
+            item_chat_room_id = parse_dict(item, "chatRoomId")
             
             if item_live_room_id in white_list:
               if live_room_id != item_live_room_id:
                 is_chat_room_changed = True
                 
-              chat_room_id = parse_dict(item, "chatRoomId")
+              chat_room_id = item_chat_room_id
 
               if live_room_id == "":
                 stream_url = parse_dict(item, "rtmpLiveUrl")
@@ -290,7 +290,7 @@ def check_live_list():
               live_room_id = item_live_room_id
               break
             else:
-              Utils.print_with_datetime("{}: {}-{}".format(item_live_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
+              Utils.print_with_datetime("{} :: {} :: {}-{}".format(item_live_room_id, item_chat_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
           except:
             Utils.print_with_datetime("[check_live_list: data error]")
             time.sleep(10)

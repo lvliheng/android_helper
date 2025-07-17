@@ -19,9 +19,6 @@ def init():
   parser.add_argument("-p", "--package", help = "package name")
   parser.add_argument("-k", "--keyword", help = "keyword header")
 
-  global temp_chat_room_list
-  temp_chat_room_list = ["181595984166913", "252565635792910"]
-
   args = parser.parse_args()
   global app_package
   if args.package != None:
@@ -91,6 +88,9 @@ def start():
   global live_info_file
   live_info_file = "live_info"
   
+  global live_config_file
+  live_config_file = "live_config"
+  check_config_file(live_config_file)
   global request_config_file
   request_config_file = "request_config"
   check_config_file(request_config_file)
@@ -554,6 +554,14 @@ def set_config():
 
 def init_config():
   try:
+    global live_config_file
+    live_config_data = open(live_config_file, "r")
+    global live_config
+    live_config = live_config_data.read()
+    separator = ","
+    global temp_chat_room_list
+    temp_chat_room_list = separator.join(parse_json(live_config, "chatRoomList"))
+
     global live_info_file
     file = open(live_info_file, "r")
     config = file.read()
@@ -630,6 +638,7 @@ def init_count():
   
   global chat_room_id
   global temp_chat_room_list
+  temp_chat_room_list = separator.join(parse_json(live_config, "chatRoomList"))
   if chat_room_id in temp_chat_room_list:
     random_count = random.randint(-10 * 1000, 10 * 1000)
     max_count = 40 * 1000 + random_count
