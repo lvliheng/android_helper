@@ -35,27 +35,26 @@ def init():
   stream_refresh_hour = 2
   global stream_duration_minute
   stream_duration_minute = 30
-
-  start_hour = 19
-  start_minute = 50
   
-  start_job(start_hour, start_minute)
+  start_job([(19, 50), (13, 50)])
 
-def start_job(start_hour, start_minute):
+def start_job(times):
   global stream_refresh_hour
   global current_time
-  current_time = datetime.now()
-  start_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour, start_minute)
-  global end_date_time
-  end_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour + stream_refresh_hour, start_minute)
-  start_task_time = f"{start_hour:02d}:{start_minute:02d}"
 
-  if current_time > start_date_time and current_time < end_date_time:
-    start()
-  else:
-    print("-----task will start at {}-----".format(start_task_time))
-  
-  schedule.every().day.at(start_task_time).do(start)
+  for start_hour, start_minute in times:
+    current_time = datetime.now()
+    start_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour, start_minute)
+    global end_date_time
+    end_date_time = datetime(current_time.year, current_time.month, current_time.day, start_hour + stream_refresh_hour, start_minute)
+    start_task_time = f"{start_hour:02d}:{start_minute:02d}"
+
+    if current_time > start_date_time and current_time < end_date_time:
+      start()
+    else:
+      print("-----task will start at {}-----".format(start_task_time))
+    
+    schedule.every().day.at(start_task_time).do(start)
 
   while True:
     schedule.run_pending()
