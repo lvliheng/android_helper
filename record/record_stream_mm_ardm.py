@@ -638,7 +638,6 @@ def init_count():
   
   global chat_room_id
   global temp_chat_room_list
-  temp_chat_room_list = separator.join(parse_json(live_config, "chatRoomList"))
   if chat_room_id in temp_chat_room_list:
     random_count = random.randint(-10 * 1000, 10 * 1000)
     max_count = 40 * 1000 + random_count
