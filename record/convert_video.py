@@ -15,7 +15,7 @@ def init():
 
   check_file_record()
   
-  os.system("shutdown /s /t 10")
+  # os.system("shutdown /s /t 10")
  
 def check_file_record():
   global record_directory
