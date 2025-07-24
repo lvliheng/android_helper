@@ -123,6 +123,8 @@ def init_config():
   global live_config
   live_config = live_config_data.read()
   separator = ","
+  global white_list
+  white_list = separator.join(parse_json(live_config, "whiteList"))
   global temp_chat_room_list
   temp_chat_room_list = separator.join(parse_json(live_config, "chatRoomList"))
   
@@ -249,7 +251,7 @@ def check_live_list():
         time.sleep(10)
         check_live_list()
       
-      global temp_chat_room_list
+      global white_list
       global live_room_id
       global chat_room_id
       if len(live) > 0:
@@ -259,7 +261,7 @@ def check_live_list():
             item_live_room_id = parse_dict(item, "liveRoomId")
             item_chat_room_id = parse_dict(item, "chatRoomId")
             
-            if item_live_room_id in temp_chat_room_list:
+            if item_live_room_id in white_list:
               if live_room_id != item_live_room_id:
                 is_chat_room_changed = True
               
