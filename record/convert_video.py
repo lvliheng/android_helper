@@ -4,8 +4,13 @@ from pathlib import Path
 
 def init():
   current = datetime.now()
+  global year
+  year = current.strftime("%Y")
+  global month
+  month = current.strftime("%m")
+
   global today
-  today = "{}-{}-{}".format(current.strftime("%Y"), current.strftime("%m"), current.strftime("%d"))
+  today = "{}-{}-{}".format(year, month, current.strftime("%d"))
 
   global record_directory
   global stream_directory
@@ -13,9 +18,9 @@ def init():
   stream_directory = today
   Path(stream_directory).mkdir(parents = True, exist_ok = True)
 
-  check_file_record()
+  # check_file_record()
+  upload_file()
 
-  #  bypy -v syncup D:\_temp\stream\2025-07-25\ /2025/07/2025-07-25/
   # os.system("shutdown /s /t 10")
  
 def check_file_record():
@@ -39,6 +44,20 @@ def check_file_record():
 def convert_file_format(input_file, output_file):
   convert_command = "ffmpeg -i {} -c:v libx264 {}".format(input_file, output_file)
   os.system(convert_command)
+
+def upload_file():
+  print("upload file")
+  global year
+  global month
+  global today
+
+  current_file_path = Path(__file__).resolve()
+  print("Current file path:", current_file_path)
+
+  command = "bypy -v syncup D:\_temp\stream\{}\ /{}/{}/{}/".format(today, year, month, today)
+  print(command)
+
+
 
 if __name__=="__main__":
   try:
