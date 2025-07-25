@@ -36,7 +36,7 @@ def init():
   global stream_duration_minute
   stream_duration_minute = 30
   
-  start_job([(19, 50), (13, 50)])
+  start_job([(14, 20), (19, 50)])
 
 def start_job(times):
   global stream_refresh_hour
