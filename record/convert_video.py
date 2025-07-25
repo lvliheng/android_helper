@@ -14,8 +14,8 @@ def init():
   Path(stream_directory).mkdir(parents = True, exist_ok = True)
 
   check_file_record()
-  
-  os.system("shutdown /s /t 10")
+  #  bypy -v syncup D:\_temp\stream\2025-07-25\ /2025/07/2025-07-25/
+  # os.system("shutdown /s /t 10")
  
 def check_file_record():
   global record_directory
