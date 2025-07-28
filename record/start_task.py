@@ -26,16 +26,18 @@ def start():
     # window = gw.getActiveWindow()
     window = gw.getWindowsWithTitle("D:\_tools\start_task.bat")[0]
     window.moveTo(953, 0)
-    window.resizeTo(967, 547)
+    window.resizeTo(974, 547)
   except:
     Utils.hot_key_safely(["win", "right"])
     time.sleep(1)
     Utils.hot_key_safely(["win", "up"])
   time.sleep(1)
+  
   Utils.hot_key_safely(["ctrl", "shift", "t"])
   time.sleep(1)
   Utils.write_safely("cd D:\_temp\stream", "enter")
   time.sleep(1)
+  
   Utils.hot_key_safely(["ctrl", "shift", "t"])
   time.sleep(1)
   Utils.write_safely("cd D:\_temp\stream", "enter")

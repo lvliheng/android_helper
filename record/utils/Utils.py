@@ -19,6 +19,7 @@ def click_safely(x, y):
     time.sleep(.1)
     pyautogui.click(x, y)
   except:
+    print_with_datetime("click error:", x, y)
     time.sleep(1)
     click_safely(x, y)
     
@@ -28,6 +29,7 @@ def double_click_safely(x, y):
     time.sleep(.1)
     pyautogui.click(clicks = 2, interval = 0.25)
   except:
+    print_with_datetime("double click error:", x, y)
     time.sleep(1)
     double_click_safely(x, y)
 
@@ -63,6 +65,7 @@ def write_safely(content, key):
       pyautogui.press(key)
     return True
   except:
+    print_with_datetime("write error:", content)
     return False
   
 def write_with_interval_safely(content, key):
@@ -80,7 +83,7 @@ def get_pixel_safely(x, y):
     pixel = pyautogui.pixel(x, y)
     return pixel
   except Exception as e:
-    print_with_datetime("pixel: error:\n{}".format(e))
+    print_with_datetime("pixel: error: {},{}\n{}".format(x, y, e))
     time.sleep(1)
     get_pixel_safely(x, y)
 
@@ -89,7 +92,7 @@ def is_pixel_match_color_safely(x, y, color):
     pixel = pyautogui.pixelMatchesColor(x, y, color, tolerance = 10)
     return pixel
   except Exception as e:
-    print_with_datetime("pixelMatchesColor: error:\n{}".format(e))
+    print_with_datetime("pixelMatchesColor: error: {},{}\n{}".format(x, y, e))
     time.sleep(1)
     is_pixel_match_color_safely(x, y, color)
       

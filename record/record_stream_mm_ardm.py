@@ -32,7 +32,7 @@ def init():
     keyword_header = ""
 
   global stream_refresh_hour
-  stream_refresh_hour = 2
+  stream_refresh_hour = 1
   global stream_duration_minute
   stream_duration_minute = 30
   
@@ -102,7 +102,7 @@ def start():
   global stream_url
   stream_url = ""
 
-  print(f"------------{today}------------")  
+  Utils.print_with_datetime("------------start------------")  
   move_to_first_desktop()
   time.sleep(10)
   check_application()
@@ -118,7 +118,7 @@ def start():
   close_app()
   time.sleep(10)
   convert_video()
-  print(f"------------{today}------------")
+  Utils.print_with_datetime("------------end------------")
 
 def check_application():
   click_window_right_top()
@@ -157,13 +157,11 @@ def check_page():
   while True:
     stop_play()
     time.sleep(.1)
-    yellow_pixel = Utils.get_pixel_safely(705, 934)
+    yellow_pixel = Utils.is_pixel_match_color_safely(705, 934, (222, 197, 69))
     time.sleep(.1)
-    yellow_exist = yellow_pixel == (222, 197, 69)
-    white_pixel = Utils.get_pixel_safely(232, 986)
+    white_pixel = Utils.is_pixel_match_color_safely(232, 986, (255, 255, 255))
     time.sleep(.1)
-    white_exist = white_pixel == (255, 255, 255)
-    if yellow_exist and white_exist:
+    if yellow_pixel and white_pixel:
       open_live_list()
       time.sleep(2)
       break
@@ -242,11 +240,11 @@ def check_stream_state():
 
 def is_player_error():
   time.sleep(.1)
-  red_icon_pixel = Utils.get_pixel_safely(406, 597)
+  red_icon_pixel = Utils.is_pixel_match_color_safely(406, 597, (0, 209, 255))
   time.sleep(.1)
-  restart_button_pixel = Utils.get_pixel_safely(284, 484)
+  restart_button_pixel = Utils.is_pixel_match_color_safely(284, 484, (255, 0, 104))
   time.sleep(.1)
-  return ((red_icon_pixel == (0, 209, 255) and restart_button_pixel == (255, 0, 104)))
+  return red_icon_pixel and restart_button_pixel
 
 def click_restart_player():
   Utils.click_safely(284, 484)
@@ -257,27 +255,27 @@ def is_after_stream_dead_line():
 
 def is_stream_empty():
   time.sleep(.1)
-  first_item_cover_pixel = Utils.get_pixel_safely(320, 220)
+  first_item_cover_pixel = Utils.is_pixel_match_color_safely(320, 220, (238, 238, 238))
   time.sleep(.1)
-  white_pixel = Utils.get_pixel_safely(300, 620)
+  white_pixel = Utils.is_pixel_match_color_safely(300, 620, (255, 255, 255))
   time.sleep(.1)
-  refresh_button_pixel = Utils.get_pixel_safely(430, 640)
+  refresh_button_pixel = Utils.is_pixel_match_color_safely(430, 640, (183, 89, 195))
   time.sleep(.1)
-  return (first_item_cover_pixel == (238, 238, 238) or (white_pixel != (255, 255, 255) and refresh_button_pixel == (183, 89, 195)))
+  return first_item_cover_pixel or (not white_pixel and refresh_button_pixel)
 
 def is_stream_start():
   time.sleep(.1)
-  pixel = Utils.get_pixel_safely(320, 220)
+  pixel = Utils.is_pixel_match_color_safely(320, 220, (7, 193, 96))
   time.sleep(.1)
-  return pixel == (7, 193, 96)
+  return pixel
 
 def is_stream_end():
   time.sleep(.1)
-  white_pixel = Utils.get_pixel_safely(480, 590)
+  white_pixel = Utils.is_pixel_match_color_safely(480, 590, (255, 255, 255))
   time.sleep(.1)
-  purple_pixel = Utils.get_pixel_safely(480, 600)
+  purple_pixel = Utils.is_pixel_match_color_safely(480, 600, (183, 89, 195))
   time.sleep(.1)
-  return white_pixel == (255, 255, 255) and purple_pixel == (183, 89, 195)
+  return white_pixel and purple_pixel
 
 def is_app_running():
   global app_package
@@ -369,13 +367,13 @@ def click_check_box():
 
 def refresh():
   Utils.print_with_datetime("refresh")
-  first_item_cover_pixel = Utils.get_pixel_safely(320, 220)
+  first_item_cover_pixel = Utils.is_pixel_match_color_safely(320, 220, (238, 238, 238))
   time.sleep(.1)
-  refresh_button_pixel = Utils.get_pixel_safely(430, 640)
+  refresh_button_pixel = Utils.is_pixel_match_color_safely(430, 640, (183, 89, 195))
   time.sleep(.1)
-  if refresh_button_pixel == (183, 89, 195):
+  if refresh_button_pixel:
     click_refresh()
-  elif first_item_cover_pixel == (238, 238, 238):
+  elif first_item_cover_pixel:
     drag_refresh()
   else:
     drag_refresh()
@@ -396,9 +394,9 @@ def click_window_right_top():
   Utils.click_safely(1000, 20)
 
 def click_stop():
-  button_pixel = Utils.get_pixel_safely(330, 620)
-  background_pixel = Utils.get_pixel_safely(330, 520)
-  if button_pixel == (183, 89, 195) and background_pixel == (255, 254, 255):
+  button_pixel = Utils.is_pixel_match_color_safely(330, 620, (183, 89, 195))
+  background_pixel = Utils.is_pixel_match_color_safely(330, 520, (255, 254, 255))
+  if button_pixel and background_pixel:
     click_dialog_button()
   else:
     click_close_button()
@@ -456,11 +454,11 @@ def check_stream_url():
     time.sleep(10)
 
 def is_record_started():
-  pixel = Utils.get_pixel_safely(780, 60)
+  pixel = Utils.is_pixel_match_color_safely(780, 60, (255, 0, 104))
   time.sleep(.1)
-  pixel2 = Utils.get_pixel_safely(810, 60)
+  pixel2 = Utils.is_pixel_match_color_safely(810, 60, (255, 0, 104))
   time.sleep(.1)
-  return pixel == (255, 0, 104) or pixel2 == ((255, 0, 104))
+  return pixel or pixel2
 
 def start_record_screen():
   click_window_left_top()
@@ -712,18 +710,18 @@ def is_chat_room_exists():
   move_to_selected_item()
     
   time.sleep(.1)
-  pixel = Utils.get_pixel_safely(996, 835)
+  pixel = Utils.is_pixel_match_color_safely(996, 835, (231, 231, 231))
   time.sleep(.1)
-  return pixel == (231, 231, 231)
+  return pixel
 
 def move_to_selected_item():
   Utils.move_to_safely(996, 835)
 
 def is_chat_room_valid():
   time.sleep(.1)
-  pixel = Utils.get_pixel_safely(1805, 660)
+  pixel = Utils.is_pixel_match_color_safely(1805, 660, (103, 194, 58))
   time.sleep(.1)
-  return pixel == (103, 194, 58) and get_selected_count() > 0
+  return pixel and get_selected_count() > 0
 
 def get_selected_count():
   click_input()
@@ -750,9 +748,9 @@ def string_to_int(value):
 
 def is_list_open():
   time.sleep(.1)
-  pixel = Utils.get_pixel_safely(1122, 1039)
+  pixel = Utils.is_pixel_match_color_safely(1122, 1039, (245, 108, 108))
   time.sleep(.1)
-  return pixel == (245, 108, 108)
+  return pixel
 
 def click_application_top():
   Utils.click_safely(1300, 620)

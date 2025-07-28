@@ -18,7 +18,7 @@ def init():
   stream_directory = today
   Path(stream_directory).mkdir(parents = True, exist_ok = True)
 
-  # check_file_record()
+  check_file_record()
   upload_file()
 
   # os.system("shutdown /s /t 10")
@@ -46,16 +46,15 @@ def convert_file_format(input_file, output_file):
   os.system(convert_command)
 
 def upload_file():
-  print("upload file")
   global year
   global month
   global today
 
-  current_file_path = Path(__file__).resolve()
-  print("Current file path:", current_file_path)
-
-  command = "bypy -v syncup D:\_temp\stream\{}\ /{}/{}/{}/".format(today, year, month, today)
-  print(command)
+  upload_command = "bypy -v syncup D:\_temp\stream\{}\ /{}/{}/{}/".format(today, year, month, today)
+  print('-----')
+  print(upload_command)
+  print('-----')
+  os.system(upload_command)
 
 
 
