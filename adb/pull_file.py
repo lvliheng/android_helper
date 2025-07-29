@@ -64,6 +64,8 @@ def checkArgs():
     selectedRemotePath = args.remote
   if args.local != None:
     selectedLocalPath = args.local
+  if selectedLocalPath == "-1":
+    selectedLocalPath = ""
 
   checkDevices(selectedDevice, selectedFilter, selectedRemotePath, selectedLocalPath)
 
