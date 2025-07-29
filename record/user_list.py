@@ -145,16 +145,18 @@ def get_user_list():
             if user["state"] != 1:
               continue
             
+            name = ""
             if user["nickName"].endswith(" "):
-              print("    ", f"{user['nickName']}_", " :: ", user["deviceId"], " :: ", user["parentMobile"])
+              name = f"{user['nickName']}_"
               list.append(user["id"])
             elif user["deviceId"] == '3b36ce2650173adeebc6565d9a139c5b':
-              print("    ", f"{user['nickName']}", " :: ", user["deviceId"], " :: ", user["parentMobile"])
+              name = user['nickName']
               list.append(user["id"])
             elif user["parentMobile"] == None:
-              print("    ", f"{user['nickName']}", " :: ", user["deviceId"], " :: ", user["parentMobile"])
+              name = user['nickName']
               list.append(user["id"])
-              
+            if name != "":
+              print(f"\t{get_string_full_length(name, 15)}\t{user['deviceId']}\t{user['parentMobile']}")  
           if page_num < page_max:
             time.sleep(1)
             page_num += 1
@@ -201,13 +203,21 @@ def get_user_info(id):
       try:
         user_info = data["data"]
         real_name = user_info['realName'] or "未实名"
-        print(f"{user_info['nickName']}  {real_name}  {user_info['mobile']}  {user_info['userId']}  {user_info['imId']}  {user_info['gmtCreate']}")
+        name = user_info['nickName']
+        mobile = user_info['mobile']
+        user_id = user_info['userId']
+        im_id = user_info['imId']
+        create = user_info['gmtCreate']
+        print(f"{get_string_full_length(name, 15)}\t{real_name}\t{mobile}\t{user_id}\t{im_id}\t{create}")
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_info: error: {e}]")
     elif code == 301:
       login()
     else:
       Utils.print_with_datetime(f"[get_user_info: fail: {message}]", )
+
+def get_string_full_length(value_int, max_length):
+  return "{:<{}}".format(value_int, max_length)
 
 def login():
   global request_config
