@@ -10,6 +10,7 @@ from utils import Utils
 def init():  
   parser = argparse.ArgumentParser()
   parser.add_argument("-i", "--id", help = "user id")
+  parser.add_argument("-f", "--format", help = "format")
 
   args = parser.parse_args()
   
@@ -18,6 +19,11 @@ def init():
     id = args.id
   else:
     id = ""
+  global format
+  if args.format != None:
+    format = args.format
+  else:
+    format = ""
   
   start()
 
@@ -95,14 +101,27 @@ def get_user_info(id):
     if code == 200:
       try:
         user_info = data["data"]
-        json_result = json.dumps(user_info, ensure_ascii = False)
-        print(json_result)
+        global format
+        if format == "-1":
+          json_result = json.dumps(user_info, ensure_ascii = False)
+          print(json_result)
+        else:
+          real_name = user_info['realName'] or "未实名"
+          name = user_info['nickName']
+          mobile = user_info['mobile']
+          user_id = user_info['userId']
+          im_id = user_info['imId']
+          create = user_info['gmtCreate']
+          print(f"{get_string_full_length(name, 15)}\t{real_name}\t{mobile}\t{user_id}\t{im_id}\t{create}")
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_info: {e}]")
     elif code == 301:
       login()
     else:
       Utils.print_with_datetime(f"[get_user_info: {message}]", )
+
+def get_string_full_length(value_int, max_length):
+  return "{:<{}}".format(value_int, max_length)
 
 def get_imuser_info(id):
   global request_config
