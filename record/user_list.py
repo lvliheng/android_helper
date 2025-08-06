@@ -11,7 +11,8 @@ def init():
   parser = argparse.ArgumentParser()
   parser.add_argument("-f", "--pagef", help = "page from")
   parser.add_argument("-t", "--paget", help = "page to")
-  parser.add_argument("-n", "--name", help = "nickname")
+  parser.add_argument("-n", "--name", help = "nick name")
+  parser.add_argument("-l", "--list", help = "show list")
 
   args = parser.parse_args()
   
@@ -34,6 +35,12 @@ def init():
     nick_name = ""
   if nick_name == "-1":
     nick_name = ""
+
+  global show_list
+  if args.list != None:
+    show_list = args.list
+  else:
+    show_list = ""
     
   start()
 
@@ -137,6 +144,7 @@ def get_user_list():
           
           global start
           global end
+          global show_list
           for user in user_list:
             if end == "":
               end = user["gmtCreate"]
@@ -146,17 +154,24 @@ def get_user_list():
               continue
             
             name = ""
-            if user["nickName"].endswith(" "):
-              name = f"{user['nickName']}_"
-              list.append(user["id"])
-            elif user["deviceId"] == '3b36ce2650173adeebc6565d9a139c5b':
-              name = user['nickName']
-              list.append(user["id"])
-            elif user["parentMobile"] == None:
-              name = user['nickName']
-              list.append(user["id"])
-            if name != "":
-              print(f"\t{get_string_full_length(name, 15)}\t{user['deviceId']}\t{user['parentMobile']}")  
+            if show_list == "-1":
+              if user["nickName"].endswith(" "):
+                name = f"{user['nickName']}_"
+                list.append(user["id"])
+              elif user["deviceId"] == '3b36ce2650173adeebc6565d9a139c5b':
+                name = user['nickName']
+                list.append(user["id"])
+              elif user["parentMobile"] == None:
+                name = user['nickName']
+                list.append(user["id"])
+              if name != "":
+                print(f"\t{get_string_full_length(name, 15)}\t{user['deviceId']}\t{user['parentMobile']}")  
+            else:
+              name = f"{user['nickName']}"
+              real_name = user['realName'] or "未实名"
+              print(f"\t{get_string_full_length(name, 15)}\t{real_name}\t{user['mobile']}\t{user['parentMobile']}")  
+
+            
           if page_num < page_max:
             time.sleep(1)
             page_num += 1

@@ -236,7 +236,6 @@ def check_live_list():
               chat_room_id = parse_dict(item, "chatRoomId")
               live_room_id = item_live_room_id
               Utils.print_with_datetime("->{}-{}".format(parse_dict(item, "nickName"), parse_dict(item, "liveName")))
-              break
             else:
               Utils.print_with_datetime("{}-{}".format(parse_dict(item, "nickName"), parse_dict(item, "liveName")))
           except:
@@ -272,9 +271,10 @@ def check_live_list():
 
 def get_live_info():
   global request_config
-  live_json = parse_json(request_config, "live")
+  live_json = parse_json(request_config, "liveinfo")
+  url = parse_dict(live_json, "url")
   global live_room_id
-  url = "https://api.szbobo.net/video/api/room/realtimeInfo?liveRoomId={}".format(live_room_id)
+  url = "{}{}".format(url, live_room_id)
   global token
   headers = {"Content-Type": "application/json; charset=utf-8", "Authorization": "Bearer {}".format(token)}
   
