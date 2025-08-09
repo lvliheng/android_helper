@@ -282,8 +282,8 @@ def check_live_list():
               break
             else:
               Utils.print_with_datetime("{} :: {} :: {}-{}".format(item_live_room_id, item_chat_room_id, parse_dict(item, "nickName"), parse_dict(item, "liveName")))
-          except:
-            Utils.print_with_datetime("[check_live_list: data error]")
+          except Exception as e:
+            Utils.print_with_datetime("[check_live_list: {}]".format(e))
             continue
             
         if is_chat_room_changed:
