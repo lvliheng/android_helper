@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from pathlib import Path
+from send2trash import send2trash
 
 def init():
   current = datetime.now()
@@ -44,11 +45,6 @@ def check_file_record():
 def convert_file_format(input_file, output_file):
   convert_command = "ffmpeg -i {} -c:v libx264 {}".format(input_file, output_file)
   os.system(convert_command)
-
-def remove_original_file(original_file, target_file):
-  if os.path.getsize(target_file) == os.path.getsize(original_file):
-    print("remove original file")
-    
 
 def upload_file():
   global year
