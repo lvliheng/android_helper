@@ -1,7 +1,7 @@
 import os
 import time
 import logging
-from datetime import datetime
+from datetime import date, timedelta
 from send2trash import send2trash
 import argparse
 
@@ -28,7 +28,7 @@ def move_old_dirs_to_recycle_bin(path, days):
 
     for item in os.listdir(path):
         full_path = os.path.join(path, item)
-        if os.path.isdir(full_path):
+        if os.path.isfile(full_path):
             try:
                 modified_time = os.path.getmtime(full_path)
                 if modified_time < cutoff:
@@ -44,6 +44,14 @@ def start():
   move_old_dirs_to_recycle_bin(TARGET_PATH, DAYS_THRESHOLD)
   logging.info("Cleanup finished.\n")
 
+  old_date = date.today() - timedelta(days = 7)
+  old_year = old_date.strftime("%Y")
+  old_month = old_date.strftime("%m")
+  old_day = "{}-{}-{}".format(old_year, old_month, old_date.strftime("%d"))
+  old_dir = "D:\_temp\stream\{}".format(old_day)
+  logging.info(f"Moved to Recycle Bin: {old_dir}")
+  # send2trash(old_dir)
+
 def init():
   parser = argparse.ArgumentParser()
   parser.add_argument("-p", "--path", help = "target directory path")
@@ -52,6 +60,8 @@ def init():
   if args.path != None:
     TARGET_PATH = args.path
   print(TARGET_PATH)
+
+  # start()
 
 # === MAIN ===
 if __name__ == "__main__":
