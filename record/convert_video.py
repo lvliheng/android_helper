@@ -11,7 +11,6 @@ def init():
   month = current.strftime("%m")
 
   global today
-  today_date = date.today()
   today = "{}-{}-{}".format(year, month, current.strftime("%d"))
 
   global record_directory
@@ -26,7 +25,7 @@ def init():
   upload_file(today, year, month)
 
   time.sleep(1)
-  yesterday_date = today_date - timedelta(days = 1)
+  yesterday_date = date.today() - timedelta(days = 1)
   yesterday_year = yesterday_date.strftime("%Y")
   yesterday_month = yesterday_date.strftime("%m")
   yesterday = "{}-{}-{}".format(yesterday_year, yesterday_month, yesterday_date.strftime("%d"))
