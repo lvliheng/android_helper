@@ -251,7 +251,11 @@ def click_restart_player():
 
 def is_after_stream_dead_line():
   global stream_dead_line
-  return datetime.now() > stream_dead_line
+
+  time.sleep(.1)
+  red_icon_pixel = Utils.is_pixel_match_color_safely(659, 1039, (255, 80, 80))
+  time.sleep(.1)
+  return datetime.now() > stream_dead_line and not red_icon_pixel
 
 def is_stream_empty():
   time.sleep(.1)

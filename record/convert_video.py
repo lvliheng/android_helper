@@ -1,7 +1,7 @@
 import os
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from pathlib import Path
-from send2trash import send2trash
+import time
 
 def init():
   current = datetime.now()
@@ -11,7 +11,7 @@ def init():
   month = current.strftime("%m")
 
   global today
-  today = "{}-{}-{}".format(year, month, current.strftime("%d"))
+  today = date.today()
 
   global record_directory
   global stream_directory
@@ -19,10 +19,16 @@ def init():
   stream_directory = today
   Path(stream_directory).mkdir(parents = True, exist_ok = True)
 
+  time.sleep(1)
   check_file_record()
-  upload_file()
+  time.sleep(1)
+  upload_file(today, year, month)
 
-  # os.system("shutdown /s /t 10")
+  time.sleep(1)
+  yesterday = today - timedelta(days = 1)
+  yesterday_year = yesterday.strftime("%Y")
+  yesterday_month = yesterday.strftime("%m")
+  upload_file(yesterday, yesterday_year, yesterday_month)
  
 def check_file_record():
   global record_directory
@@ -46,18 +52,12 @@ def convert_file_format(input_file, output_file):
   convert_command = "ffmpeg -i {} -c:v libx264 {}".format(input_file, output_file)
   os.system(convert_command)
 
-def upload_file():
-  global year
-  global month
-  global today
-
+def upload_file(today, year, month):
   upload_command = "bypy -v syncup D:\_temp\stream\{}\ /{}/{}/{}/".format(today, year, month, today)
   print('-----')
   print(upload_command)
   print('-----')
   os.system(upload_command)
-
-
 
 if __name__=="__main__":
   try:
