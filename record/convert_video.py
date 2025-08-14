@@ -11,7 +11,8 @@ def init():
   month = current.strftime("%m")
 
   global today
-  today = date.today()
+  today_date = date.today()
+  today = "{}-{}-{}".format(year, month, current.strftime("%d"))
 
   global record_directory
   global stream_directory
@@ -25,9 +26,10 @@ def init():
   upload_file(today, year, month)
 
   time.sleep(1)
-  yesterday = today - timedelta(days = 1)
-  yesterday_year = yesterday.strftime("%Y")
-  yesterday_month = yesterday.strftime("%m")
+  yesterday_date = today_date - timedelta(days = 1)
+  yesterday_year = yesterday_date.strftime("%Y")
+  yesterday_month = yesterday_date.strftime("%m")
+  yesterday = "{}-{}-{}".format(yesterday_year, yesterday_month, yesterday_date.strftime("%d"))
   upload_file(yesterday, yesterday_year, yesterday_month)
  
 def check_file_record():
@@ -62,5 +64,6 @@ def upload_file(today, year, month):
 if __name__=="__main__":
   try:
     init()
-  except:
+  except Exception as e:
+    print("convert video error:", e)
     None
