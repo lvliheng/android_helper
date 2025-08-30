@@ -154,30 +154,34 @@ def move_to_first_desktop():
   time.sleep(.1)
 
 def check_page():
-  while True:
-    stop_play()
-    time.sleep(.1)
-    yellow_pixel = Utils.is_pixel_match_color_safely(705, 934, (222, 197, 69))
-    time.sleep(.1)
-    white_pixel = Utils.is_pixel_match_color_safely(232, 986, (255, 255, 255))
-    time.sleep(.1)
-    if yellow_pixel and white_pixel:
-      open_live_list()
-      time.sleep(2)
-      break
-    else:
-      global check_page_times
-      check_page_times += 1
-      if check_page_times > 3:
-        close_app()
-        time.sleep(10)
-        reset_check_times()
-        launch_app()
-        time.sleep(10)
-        check_page()
+  if is_login_page_visible():
+    Utils.print_with_datetime('-logout')
+    login()
+  else:
+    while True:
+      stop_play()
+      time.sleep(.1)
+      yellow_pixel = Utils.is_pixel_match_color_safely(705, 934, (222, 197, 69))
+      time.sleep(.1)
+      white_pixel = Utils.is_pixel_match_color_safely(232, 986, (255, 255, 255))
+      time.sleep(.1)
+      if yellow_pixel and white_pixel:
+        open_live_list()
+        time.sleep(2)
         break
       else:
-        drag_next()
+        global check_page_times
+        check_page_times += 1
+        if check_page_times > 3:
+          close_app()
+          time.sleep(10)
+          reset_check_times()
+          launch_app()
+          time.sleep(10)
+          check_page()
+          break
+        else:
+          drag_next()
 
 def stop_play():
   Utils.click_safely(478, 540)
