@@ -165,11 +165,11 @@ def get_user_list():
                 name = user['nickName']
                 list.append(user["id"])
               if name != "":
-                print(f"\t{get_string_full_length(name, 15)}\t{user['deviceId']}\t{user['parentMobile']}")  
+                print(f"\t{get_short_string(name, 4)}\t{user['deviceId']}\t{user['parentMobile']}")  
             else:
               name = f"{user['nickName']}"
               real_name = user['realName'] or "未实名"
-              print(f"\t{get_string_full_length(name, 15)}\t{real_name}\t{user['mobile']}\t{user['parentMobile']}")  
+              print(f"\t{get_short_string(name, 4)}\t{real_name}\t{user['mobile']}\t{user['parentMobile']}")  
 
             
           if page_num < page_max:
@@ -223,7 +223,7 @@ def get_user_info(id):
         user_id = user_info['userId']
         im_id = user_info['imId']
         create = user_info['gmtCreate']
-        print(f"{get_string_full_length(name, 15)}\t{real_name}\t{mobile}\t{user_id}\t{im_id}\t{create}")
+        print(f"{get_short_string(name, 4)}\t{real_name}\t{mobile}\t{user_id}\t{im_id}\t{create}")
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_info: error: {e}]")
     elif code == 301:
@@ -233,6 +233,14 @@ def get_user_info(id):
 
 def get_string_full_length(value_int, max_length):
   return "{:<{}}".format(value_int, max_length)
+
+def get_short_string(s, max_length):
+  if len(s) <= 2 * max_length - 1:
+        return get_string_full_length(s, 2 * max_length)
+  elif len(s) <= 2 * max_length:
+        return s
+  
+  return s[:max_length] + "..." + s[-max_length:]
 
 def login():
   global request_config
