@@ -271,7 +271,7 @@ def check_live_list():
                 stream_url = parse_dict(item, "rtmpLiveUrl")
                 stream_url = stream_url.replace('artc://', 'rtmp://')
                 global today_millis
-                record_stream_command = "ffmpeg -y -i {} -acodec copy -vcodec copy {}-stream.mp4".format(stream_url, today_millis)
+                record_stream_command = "ffmpeg -y -i '{}' -acodec copy -vcodec copy {}-stream.mp4".format(stream_url, today_millis)
                 print(record_stream_command)
                 global keyword_header
                 search_key_word = "{}{}".format(keyword_header, chat_room_id)

@@ -165,11 +165,11 @@ def get_user_list():
                 name = user['nickName']
                 list.append(user["id"])
               if name != "":
-                print(f"\t{get_short_string(name, 4)}\t{user['deviceId']}\t{user['parentMobile']}")  
+                print(f"\t{user['deviceId']}\t{user['parentMobile']}\t{name}")  
             else:
               name = f"{user['nickName']}"
               real_name = user['realName'] or "未实名"
-              print(f"\t{get_short_string(name, 4)}\t{real_name}\t{user['mobile']}\t{user['parentMobile']}")  
+              print(f"{user['mobile']}\t{user['parentMobile']}\t{real_name}\t{name}")  
 
             
           if page_num < page_max:
@@ -223,7 +223,7 @@ def get_user_info(id):
         user_id = user_info['userId']
         im_id = user_info['imId']
         create = user_info['gmtCreate']
-        print(f"{get_short_string(name, 4)}\t{real_name}\t{mobile}\t{user_id}\t{im_id}\t{create}")
+        print(f"{mobile}\t{user_id}\t{im_id}\t{create}\t{real_name}\t{name}")
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_info: error: {e}]")
     elif code == 301:

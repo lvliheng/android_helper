@@ -112,7 +112,7 @@ def get_user_info(id):
           user_id = user_info['userId']
           im_id = user_info['imId']
           create = user_info['gmtCreate']
-          print(f"{get_short_string(name, 4)}\t{real_name}\t{mobile}\t{user_id}\t{im_id}\t{create}")
+          print(f"{mobile}\t{user_id}\t{im_id}\t{create}\t{real_name}\t{name}")
       except Exception as e:
         Utils.print_with_datetime(f"[get_user_info: {e}]")
     elif code == 301:
